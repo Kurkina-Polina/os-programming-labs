@@ -1,0 +1,879 @@
+Куркина Полина 3384 Лабораторная №1
+
+polina@polina-UX303UA:~/OS$ date
+Wed Feb 26 23:43:07 MSK 2025
+
+polina@polina-UX303UA:~/OS$ who
+polina   seat0        2025-02-26 18:28 (login screen)
+polina   tty2         2025-02-26 18:28 (tty2)
+
+polina@polina-UX303UA:~/OS$ uname -a
+Linux polina-UX303UA 6.8.0-52-generic #53-Ubuntu SMP PREEMPT_DYNAMIC Sat Jan 11 00:06:25 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+
+polina@polina-UX303UA:~/OS$ lscpu
+Архитектура:              x86_64
+  CPU op-mode(s):         32-bit, 64-bit
+  Address sizes:          39 bits physical, 48 bits virtual
+  Порядок байт:           Little Endian
+CPU(s):                   4
+  On-line CPU(s) list:    0-3
+ID прроизводителя:        GenuineIntel
+  Имя модели:             Intel(R) Core(TM) i3-6100U CPU @ 2.30GHz
+    Семейство ЦПУ:        6
+    Модель:               78
+    Потоков на ядро:      2
+    Ядер на сокет:        2
+    Сокетов:              1
+    Степпинг:             3
+    CPU(s) scaling MHz:   100%
+    CPU max MHz:          2300.0000
+    CPU min MHz:          400.0000
+    BogoMIPS:             4599.93
+    Флаги:                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc ar
+                          t arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4
+                          _1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb pti ssbd ibrs ibpb stibp tpr_shadow flexpriorit
+                          y ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pt
+                          s hwp hwp_notify hwp_act_window hwp_epp vnmi md_clear flush_l1d arch_capabilities
+Virtualization features:  
+  Виртуализация:          VT-x
+Caches (sum of all):      
+  L1d:                    64 KiB (2 instances)
+  L1i:                    64 KiB (2 instances)
+  L2:                     512 KiB (2 instances)
+  L3:                     3 MiB (1 instance)
+NUMA:                     
+  NUMA node(s):           1
+  NUMA node0 CPU(s):      0-3
+Vulnerabilities:          
+  Gather data sampling:   Vulnerable: No microcode
+  Itlb multihit:          KVM: Mitigation: VMX disabled
+  L1tf:                   Mitigation; PTE Inversion; VMX conditional cache flushes, SMT vulnerable
+  Mds:                    Mitigation; Clear CPU buffers; SMT vulnerable
+  Meltdown:               Mitigation; PTI
+  Mmio stale data:        Mitigation; Clear CPU buffers; SMT vulnerable
+  Reg file data sampling: Not affected
+  Retbleed:               Mitigation; IBRS
+  Spec rstack overflow:   Not affected
+  Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl
+  Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+  Spectre v2:             Mitigation; IBRS; IBPB conditional; STIBP conditional; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected
+  Srbds:                  Mitigation; Microcode
+  Tsx async abort:        Mitigation; TSX disabled
+
+#1
+тестируем без скрипта на двух видах файлов
+
+polina@polina-UX303UA:~/OS$ find ~+ / -exec bash -c "ls -l -d \"{}\" | grep \"^b\" " \; -quit 2>/dev/null  | head -n 1
+b--------- 1 root root 0, 0 Mar  5 12:41 /run/systemd/inaccessible/blk
+
+polina@polina-UX303UA:~$ find ~+ / -exec bash -c "ls -l -d \"{}\" | grep \"^s\" " \; -quit 2>/dev/null  | head -n 1
+srwxrwxr-x 1 polina polina 0 Feb 11 00:51 /home/polina/.cache/ibus/dbus-qyKyqXM9
+
+проверяем скрипт
+polina@polina-UX303UA:~/OS$ ./task1.sh
+
+polina@polina-UX303UA:~/OS$ cat test.txt 
+-rw-rw-r-- 1 polina polina 403 Feb 19 21:49 /home/polina/OS/lr1_file_output.txt
+b--------- 1 root root 0, 0 Feb 15 01:02 /run/systemd/inaccessible/blk
+c--------- 1 root root 0, 0 Feb 15 01:02 /run/systemd/inaccessible/chr
+drwxrwxr-x 3 polina polina 4096 Feb 23 20:41 /home/polina/OS
+lrwxrwxrwx 1 root root 9 Apr 22  2024 /lib64 -> usr/lib64
+p--------- 1 root root 0 Feb 15 01:02 /run/systemd/inaccessible/fifo
+srw------- 1 root root 0 Feb 15 01:02 /run/udev/control
+
+
+
+
+
+#2
+
+создаем мягкие и жесткие ссылки в домашней директории, файл на который указывают ссылки в папке OS 
+
+polina@polina-UX303UA:~/OS$ ln -s file.c ./soft_link_to_OS_file.c
+polina@polina-UX303UA:~/OS$ ln file.c ./hard_link_to_OS_file_c
+
+тестируем поиск жестких ссылок (по иноде)
+polina@polina-UX303UA:~/OS$ ls -iLR / 2>/dev/null | grep "$(ls -i file.c | cut -f1 -d' ')"
+20844121 -rw-rw-r-- 3 polina polina 0 Feb 20 00:09 hard_link_to_OS_file_c
+20844121 -rw-rw-r-- 3 polina polina 0 Feb 20 00:09 file.c
+20844121 -rw-rw-r-- 3 polina polina 0 Feb 20 00:09 file_linked.c
+
+
+
+
+
+#3
+
+polina@polina-UX303UA:~/OS$ ln -s file.c soft_link1.c
+     
+polina@polina-UX303UA:~/OS$ cat soft_link1.c
+polina@polina-UX303UA:~/OS$ cat file.c
+polina@polina-UX303UA:~/OS$ vim file.c
+polina@polina-UX303UA:~/OS$ cat soft_link1.c
+Hello
+polina@polina-UX303UA:~/OS$ cat file.c
+Hello
+
+то есть изменения в оригинальном файле отражаются и на мягкой ссылке
+попробуем переименовать оригинальный файл
+
+polina@polina-UX303UA:~/OS$ mv file.c File.c
+polina@polina-UX303UA:~/OS$ cat soft_link1.c
+cat: soft_link1.c: Нет такого файла или каталога
+
+то есть после какого либо изменения оригинального файла мягкая ссылка становится битой и указывает на несуществующий файл
+
+polina@polina-UX303UA:~/05$ cp File.c cp_file.c
+polina@polina-UX303UA:~/05$ cat cp_file.c
+Hello
+polina@polina-UX303UA:~/05$ vim File.c (добавились новые символы, чтобы проверить связь с копией)
+polina@polina-UX303UA:~/05$ cat cp_file.c
+Hello
+polina@polina-UX303UA:~/05$ cat File.c
+Hello oo
+при использовании cp создается независимый новый файл
+
+создание мягкой ссылки с помощью cp
+polina@polina-UX303UA:~/05$ cp -s File.c soft_cp_file.c
+polina@polina-UX303UA:~/05$ cat soft_cp_file.c
+Hello oo
+
+создание мягкой ссылки с помощью link
+polina@polina-UX303UA:~/05$ link File.c soft_3_file.c
+polina@polina-UX303UA:~/05$ vim File.c 
+polina@polina-UX303UA:~/05$ cat soft_3_file.c
+Hello new change in original
+
+работа скрипта по поиску мягких ссылок и подсчет их количества
+polina@polina-UX303UA:~/OS$ ./task3.sh File.c
+count = 4 task3_output.txt
+/home/polina/OS/soft_cp_file.c
+/home/polina/OS/soft_3_file.c
+/home/polina/OS/testing/file_linked.c
+/home/polina/OS/File.c
+
+
+мягкая ссылка указывает на расположение файла, поэтому при изменении файла она становится недействительной, жесткая ссылка указывает прямо на место в памяти, поэтому даже при удалении оригинального файла, по жесткой ссылке можно получить информацию записанную в том месте памяти
+
+
+
+
+
+#4
+
+находит мыгкие ссылки
+polina@polina-UX303UA:~/OS$ find -L -samefile File.c 2>/dev/null
+./soft_cp_file.c
+./soft_3_file.c
+./File.c
+
+
+#5
+stat для каждого типа файла в системе через вложенные команды
+
+polina@polina-UX303UA:~/OS$ ./task5.sh task5.txt
+-rw-rw-r-- 1 polina polina 0 Mar  5 21:13 /home/polina/OS/tsak5.txt
+  Файл: /home/polina/OS/tsak5.txt
+  Размер: 68        	Блоков: 8          Блок В/В: 4096   обычный файл
+Устройство: 8/2	Инода: 20847955    Ссылки: 1
+Доступ: (0664/-rw-rw-r--)  Uid: ( 1000/  polina)   Gid: ( 1000/  polina)
+Доступ:        2025-03-05 21:13:45.183560336 +0300
+Модифицирован: 2025-03-05 21:13:45.199560306 +0300
+Изменён:       2025-03-05 21:13:45.199560306 +0300
+Создан:        2025-03-05 21:13:45.183560336 +0300
+
+b--------- 1 root root 0, 0 Mar  5 12:41 /run/systemd/inaccessible/blk
+  Файл: /run/systemd/inaccessible/blk
+  Размер: 0         	Блоков: 0          Блок В/В: 4096   блочный специальный файл
+Устройство: 0/26	Инода: 438         Ссылки: 1     Тип устройства: 0,0
+Доступ: (0000/b---------)  Uid: (    0/    root)   Gid: (    0/    root)
+Доступ:        2025-03-05 12:41:13.363369241 +0300
+Модифицирован: 2025-03-05 12:41:13.363369241 +0300
+Изменён:       2025-03-05 12:41:13.363369241 +0300
+Создан:        2025-03-05 12:41:13.363369241 +0300
+
+c--------- 1 root root 0, 0 Mar  5 12:41 /run/systemd/inaccessible/chr
+  Файл: /run/systemd/inaccessible/chr
+  Размер: 0         	Блоков: 0          Блок В/В: 4096   символьный специальный файл
+Устройство: 0/26	Инода: 437         Ссылки: 1     Тип устройства: 0,0
+Доступ: (0000/c---------)  Uid: (    0/    root)   Gid: (    0/    root)
+Доступ:        2025-03-05 12:41:13.363369241 +0300
+Модифицирован: 2025-03-05 12:41:13.363369241 +0300
+Изменён:       2025-03-05 12:41:13.363369241 +0300
+Создан:        2025-03-05 12:41:13.363369241 +0300
+
+drwxrwxr-x 6 polina polina 4096 Mar  5 21:13 /home/polina/OS
+  Файл: /home/polina/OS
+  Размер: 4096      	Блоков: 8          Блок В/В: 4096   каталог
+Устройство: 8/2	Инода: 20844110    Ссылки: 6
+Доступ: (0775/drwxrwxr-x)  Uid: ( 1000/  polina)   Gid: ( 1000/  polina)
+Доступ:        2025-03-05 21:13:45.194560315 +0300
+Модифицирован: 2025-03-05 21:13:45.183560336 +0300
+Изменён:       2025-03-05 21:13:45.183560336 +0300
+Создан:        2025-02-19 21:27:43.612582352 +0300
+
+lrwxrwxrwx 1 polina polina 6 Feb 23 21:50 /home/polina/OS/soft_cp_file.c -> File.c
+  Файл: /home/polina/OS/soft_cp_file.c -> File.c
+  Размер: 6         	Блоков: 0          Блок В/В: 4096   символьная ссылка
+Устройство: 8/2	Инода: 20842090    Ссылки: 1
+Доступ: (0777/lrwxrwxrwx)  Uid: ( 1000/  polina)   Gid: ( 1000/  polina)
+Доступ:        2025-03-05 21:01:59.316860466 +0300
+Модифицирован: 2025-02-23 21:50:13.932157492 +0300
+Изменён:       2025-02-23 21:50:13.932157492 +0300
+Создан:        2025-02-23 21:50:13.932157492 +0300
+
+p--------- 1 root root 0 Mar  5 12:41 /run/systemd/inaccessible/fifo
+  Файл: /run/systemd/inaccessible/fifo
+  Размер: 0         	Блоков: 0          Блок В/В: 4096   файл-очередь
+Устройство: 0/26	Инода: 435         Ссылки: 1
+Доступ: (0000/p---------)  Uid: (    0/    root)   Gid: (    0/    root)
+Доступ:        2025-03-05 12:41:13.363369241 +0300
+Модифицирован: 2025-03-05 12:41:13.363369241 +0300
+Изменён:       2025-03-05 12:41:13.363369241 +0300
+Создан:        2025-03-05 12:41:13.363369241 +0300
+
+srw------- 1 root root 0 Mar  5 12:41 /run/udev/control
+  Файл: /run/udev/control
+  Размер: 0         	Блоков: 0          Блок В/В: 4096   сокет
+Устройство: 0/26	Инода: 493         Ссылки: 1
+Доступ: (0600/srw-------)  Uid: (    0/    root)   Gid: (    0/    root)
+Доступ:        2025-03-05 12:41:18.575369568 +0300
+Модифицирован: 2025-03-05 12:41:13.682369261 +0300
+Изменён:       2025-03-05 12:41:13.682369261 +0300
+Создан:        2025-03-05 12:41:13.682369261 +0300
+
+с ключом для поиска определенного типа
+polina@polina-UX303UA:~/OS$ find  -type d
+.
+./Kurkina_Polina_lb1
+./Kurkina_Polina_lb1/src
+./testdir
+./testing
+./lab1
+
+с ключом для поиска по имени
+polina@polina-UX303UA:~/OS$ find / -name "matplotlib_cppConfig.cmake.in" 2>/dev/null
+/home/polina/matplotlib-cpp/cmake/matplotlib_cppConfig.cmake.in
+
+поиск по шаблону
+polina@polina-UX303UA:~/OS$ find -name "*.txt"
+./tsak5.txt
+./Kurkina_Polina_lb1/Kurkina_Polina_lb1.txt
+./Kurkina_Polina_lb1/src/log.txt
+./lr1_file_output.txt
+./test.txt
+
+с ключом для поиска по определенному размеру
+polina@polina-UX303UA:~/OS$ find / -size +1G 2>/dev/null
+/swap.img
+/var/lib/snapd/snaps/libreoffice_336.snap
+
+
+#6
+od — вывести содержимое файла в 8м формате
+hexdump — вывести содержимое файла в 16м формате
+polina@polina-UX303UA:~/05$ od File.c
+0000000 062510 066154 020157 062556 020167 064143 067141 062547
+0000020 064440 020156 071157 063551 067151 066141 000012
+0000035
+
+polina@polina-UX303UA:~/05$ hexdump File.c
+0000000 6548 6c6c 6f20 6577 2063 6861 676e 6565
+0000010 6920 6f6e 2072 6769 6e6f 6c69 000a
+000001d
+
+polina@polina-UX303UA:~/05$ hexdump -c File.c
+0000000  H  e  l  l  o  n  e  w    c  h  a  n  g  e  \n  i  n
+0000010  o  r  i  g  i  n  a  l  \n
+000001d
+
+polina@polina-UX303UA:~/05$ hexdump -C File.c
+00000000  48 65 6c 6c 6f 20 6e 65  77 20 63 68 61 6e 67 65  |Hello new change|
+00000010  0a 20 69 6e 20 6f 72 69  67 69 6e 61 6c 20 0a 69  |. in original .i|
+0000001d
+
+polina@polina-UX303UA:~/05$ hexdump -C testing/
+hexdump: testing/: Это каталог
+
+polina@polina-UX303UA:~/05$ od testing/
+od: testing/: Это каталог
+
+polina@polina-UX303UA:~/05$ cd ..
+polina@polina-UX303UA:~$ man od
+polina@polina-UX303UA:~$ man hexdump
+polina@polina-UX303UA:~$ hexdump -C /dev/null
+polina@polina-UX303UA:~$ hexdump -C /dev/zero
+00000000  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+*
+^C
+
+
+
+
+
+№7
+polina@polina-UX303UA:~/OS$ mkdir testdir
+polina@polina-UX303UA:~/OS$ stat -c %s testdir
+4096
+polina@polina-UX303UA:~/OS$ cp task3.sh ./testdir/
+polina@polina-UX303UA:~/OS$ stat -c %s testdir
+4096
+При создании файловой системы ограничения задаются в файле /etc/mke2fs.conf.
+при удалении файлов из расширенной директории, она меньше не становится
+
+polina@polina-UX303UA:~/OS$ ./task7.sh testdir/
+4096
+638976
+polina@polina-UX303UA:~/OS$ rm testdir/* 
+polina@polina-UX303UA:~/OS$ ls testdir/
+polina@polina-UX303UA:~/OS$ ls -al testdir/
+итого 632
+drwxrwxr-x 2 polina polina 638976 Feb 26 19:19 .
+drwxrwxr-x 5 polina polina   4096 Feb 26 19:05 ..
+polina@polina-UX303UA:~/OS$ stat -c %s testdir/
+638976
+
+как расширяется директория (с скоращением строк)
+polina@polina-UX303UA:~/OS$ ./task7.sh testdir/
+4096
+Iter is 1
+4096
+…
+Iter is 204
+4096
+Iter is 205
+12288
+
+..
+Iter is 393
+12288
+Iter is 394
+16384
+
+…
+Iter is 429
+16384
+Iter is 430
+20480
+
+…
+Iter is 752
+24576
+Iter is 753
+28672
+…
+Iter is 944
+32768
+Iter is 945
+36864
+
+…
+
+polina@polina-UX303UA:~/OS$ df
+Файл.система   1K-блоков Использовано  Доступно Использовано% Cмонтировано в
+tmpfs             596300         2200    594100            1% /run
+/dev/sda2      459283568     24985824 410893968            6% /
+tmpfs            2981492        84176   2897316            3% /dev/shm
+tmpfs               5120            8      5112            1% /run/lock
+efivarfs             128           74        50           60% /sys/firmware/efi/efivars
+/dev/sda1        1098628         6284   1092344            1% /boot/efi
+tmpfs             596296          404    595892            1% /run/user/1000
+
+polina@polina-UX303UA:~/OS$ df -i
+Файл.система     Iнодов IИспользовано IСвободно IИспользовано% Cмонтировано в
+tmpfs            745372          1310    744062             1% /run
+/dev/sda2      29237248        276417  28960831             1% /
+tmpfs            745372           456    744916             1% /dev/shm
+tmpfs            745372             5    745367             1% /run/lock
+efivarfs              0             0         0              - /sys/firmware/efi/efivars
+/dev/sda1             0             0         0              - /boot/efi
+tmpfs            149074           189    148885             1% /run/user/1000
+
+tmpfs — файловая система для данных оперативной памяти
+/dev/sda2 — основная файловая система
+efivarfs — виртуальная файловая система для взаимодействия ос и прошивки устройства
+/dev/sda1 - раздел на жестком диске, отформатированный для использования с UEF так как /boot/efi используется для хранения загрузочных файлов, необходимых для загрузки операционной системы через UEFI.
+
+
+
+#8
+polina@polina-UX303UA:~$ ls -l /etc/shadow
+-rw-r----- 1 root shadow 1359 Feb 15 01:36 /etc/shadow
+polina@polina-UX303UA:~$ ls -l /etc/passwd
+-rw-r--r-- 1 root root 2930 Feb 15 01:36 /etc/passwd
+
+/etc/shadow хранит пароли, поэтому у других пользователей нет никаких прав
+/etc/passwd хранит имя пользователи , UID и дргуое, поэтому у всех пользователей есть возможность чтения
+
+
+#9
+9.1
+polina@polina-UX303UA:~/OS$ touch test8
+polina@polina-UX303UA:~/OS$ ls -l test8
+-rw-rw-r-- 1 polina polina 0 Feb 26 20:09 test8
+
+polina@polina-UX303UA:~/OS$ chmod +x test8
+polina@polina-UX303UA:~/OS$ ls -l test8
+-rwxrwxr-x 1 polina polina 0 Feb 26 20:09 test8
+
+polina@polina-UX303UA:~/OS$ sudo chown root  test8
+polina@polina-UX303UA:~/OS$ ls -l test8
+-rwxrwxr-x 1 root polina 0 Feb 26 20:09 test8
+
+polina@polina-UX303UA:~/OS$ sudo chmod 777 test8
+polina@polina-UX303UA:~/OS$ ls -l test8
+-rwxrwxrwx 1 root polina 0 Feb 26 20:09 test8
+
+polina@polina-UX303UA:~/OS$ id
+uid=1000(polina) gid=1000(polina) группы=1000(polina),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),100(users),114(lpadmin)
+
+polina@polina-UX303UA:~/OS$ stat test8
+  Файл: test8
+  Размер: 0         	Блоков: 0          Блок В/В: 4096   пустой обычный файл
+Устройство: 8/2	Инода: 20846962    Ссылки: 1
+Доступ: (0777/-rwxrwxrwx)  Uid: (    0/    root)   Gid: ( 1000/  polina)
+Доступ:        2025-02-26 20:09:00.136785105 +0300
+Модифицирован: 2025-02-26 20:09:00.136785105 +0300
+Изменён:       2025-02-26 20:15:30.821832317 +0300
+Создан:        2025-02-26 20:09:00.136785105 +0300
+
+polina@polina-UX303UA:~/OS$ sudo chmod 077 test8
+polina@polina-UX303UA:~/OS$ ls -l test8
+----rwxrwx 1 root polina 0 Feb 26 20:09 test8
+
+polina@polina-UX303UA:~/OS$ echo "hello" >test8
+polina@polina-UX303UA:~/OS$ cat test8
+hello
+
+polina@polina-UX303UA:~/OS$ sudo chmod 070 test8
+polina@polina-UX303UA:~/OS$ cat test8
+hello
+
+то есть я принадлежу группы владельцев файла, поэтому система позволяет прочитать файл
+
+polina@polina-UX303UA:~/OS$ ls -l test8
+----rwx--- 1 root polina 6 Feb 26 20:25 test8
+
+
+
+polina@polina-UX303UA:~/OS$ sudo chmod 700 test8
+
+polina@polina-UX303UA:~/OS$ cat test8
+cat: test8: Отказано в доступе
+
+отказано потому что владелец root
+
+polina@polina-UX303UA:~/OS$ ls -l /usr/bin/sudo
+-rwsr-xr-x 1 root root 277936 Apr  8  2024 /usr/bin/sudo
+
+9.2
+polina@polina-UX303UA:~/OS$ echo "Hello" > moo.txt
+polina@polina-UX303UA:~/OS$ chmod 700 moo.txt
+polina@polina-UX303UA:~/OS$ sudo chown root moo.txt
+polina@polina-UX303UA:~/OS$ stat -c "%A user=%U group=%G" moo.txt
+-rwx------ user=root group=polina
+
+написан код который будет читать файл moo от имени root (по-другому нельзя его прочесть)
+polina@polina-UX303UA:~/OS$ ls -l test9
+-rwsrwxr-x 1 root polina 16136 Mar  5 23:21 test9
+
+polina@polina-UX303UA:~/OS$ ./test9 moo.txt
+Содержимое файла moo.txt:
+Hello
+
+таким образом файл который может прочитать только  root  можно прочесть если запустить программу с SUID с владельцем root
+
+9.3
+
+polina@polina-UX303UA:~/OS$ sudo chmod 070 test8
+polina@polina-UX303UA:~/OS$ cat test8
+hello
+
+то есть я принадлежу группе владельцев файла, поэтому система позволяет прочитать файл
+
+polina@polina-UX303UA:~/OS$ ls -l test8
+----rwx--- 1 root polina 6 Feb 26 20:25 test8
+
+9.4
+polina@polina-UX303UA:~/OS$ sudo chmod u+s test8
+
+polina@polina-UX303UA:~/OS$ ls -l test8
+-rws------ 1 root polina 6 Feb 26 20:25 test8
+
+polina@polina-UX303UA:~/OS$ cat test8
+cat: test8: Отказано в доступе
+
+polina@polina-UX303UA:~/OS$ sudo chmod u+x test8
+
+polina@polina-UX303UA:~/OS$ cat test8
+cat: test8: Отказано в доступе
+
+polina@polina-UX303UA:~/OS$ sudo chown polina test8
+
+polina@polina-UX303UA:~/OS$ chmod 300 test8
+
+polina@polina-UX303UA:~/OS$ ls -l test8
+--wx------ 1 polina polina 6 Feb 26 20:25 test8
+polina@polina-UX303UA:~/OS$ chmod 600 test8
+polina@polina-UX303UA:~/OS$ ls -l test8
+
+-rw------- 1 polina polina 6 Feb 26 20:25 test8
+polina@polina-UX303UA:~/OS$  chmod u+x test8
+polina@polina-UX303UA:~/OS$ ls -l test8
+-rwx------ 1 polina polina 6 Feb 26 20:25 test8
+polina@polina-UX303UA:~/OS$ ./test8
+./test8: строка 1: hello: команда не найдена
+
+№10
+polina@polina-UX303UA:~/OS$ gcc -o task10 task10.c
+polina@polina-UX303UA:~/OS$ sudo chown root:root task10
+[sudo] пароль для polina: 
+polina@polina-UX303UA:~/OS$ sudo chown u+s task10
+chown: неверный пользователь: «u+s»
+polina@polina-UX303UA:~/OS$ sudo chmod u+s task10
+polina@polina-UX303UA:~/OS$ ls -l task10
+-rwsrwxr-x 1 root root 16224 Feb 26 21:35 task10
+polina@polina-UX303UA:~/OS$ sudo chmod 4755  task10
+polina@polina-UX303UA:~/OS$ ls -l task10
+-rwsr-xr-x 1 root root 16224 Feb 26 21:35 task10
+polina@polina-UX303UA:~/OS$ touch test1
+polina@polina-UX303UA:~/OS$ chmod 700 test1
+polina@polina-UX303UA:~/OS$ chown root test1
+chown: изменение владельца 'test1': Операция не позволена
+polina@polina-UX303UA:~/OS$ sudo chown root test1
+polina@polina-UX303UA:~/OS$ cat test1
+cat: test1: Отказано в доступе
+polina@polina-UX303UA:~/OS$ ./task10 test1
+This is working!!!
+(пользователи принадлежат разным группам, ели они будут принадлежать одной, то либо оба пользователя не смогут читать файл либо оба смогут)
+
+№11
+polina@polina-UX303UA:~/OS$ df
+Файл.система   1K-блоков Использовано  Доступно Использовано% Cмонтировано в
+tmpfs             596300         2032    594268            1% /run
+/dev/sda2      459283568     24671348 411208444            6% /
+tmpfs            2981488       121208   2860280            5% /dev/shm
+tmpfs               5120           12      5108            1% /run/lock
+efivarfs             128           67        57           55% /sys/firmware/efi/efivars
+/dev/sda1        1098628         6284   1092344            1% /boot/efi
+tmpfs             596296          164    596132            1% /run/user/1000
+polina@polina-UX303UA:~/OS$ df -i
+Файл.система     Iнодов IИспользовано IСвободно IИспользовано% Cмонтировано в
+tmpfs            745372          1316    744056             1% /run
+/dev/sda2      29237248        276941  28960307             1% /
+tmpfs            745372           531    744841             1% /dev/shm
+tmpfs            745372             5    745367             1% /run/lock
+efivarfs              0             0         0              - /sys/firmware/efi/efivars
+/dev/sda1             0             0         0              - /boot/efi
+tmpfs            149074           190    148884             1% /run/user/1000
+polina@polina-UX303UA:~/OS$ cat /etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+# / was on /dev/sda2 during curtin installation
+/dev/disk/by-uuid/86f6b514-ca55-4c58-a5c9-f5ceedf161d4 / ext4 defaults 0 1
+# /boot/efi was on /dev/sda1 during curtin installation
+/dev/disk/by-uuid/9B99-A907 /boot/efi vfat defaults 0 1
+/swap.img	none	swap	sw	0	0
+
+11.1 
+df — отображает информацию о смонтированных файловых системах (размер, использование, доступное пространство)
+
+/etc/fstab — файл, содержащий информацию о файловых системах, которые могут быть смонтированы автоматически при загрузке.
+
+lsblk — отображает информацию о блочных устройствах (дисках и разделах)
+polina@polina-UX303UA:~/OS$ lsblk
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+loop0    7:0    0     4K  1 loop /snap/bare/5
+loop1    7:1    0  73.9M  1 loop /snap/core22/1748
+loop2    7:2    0  74.3M  1 loop /snap/core22/1564
+loop3    7:3    0  66.2M  1 loop /snap/core24/716
+loop4    7:4    0 257.9M  1 loop /snap/firefox/5783
+loop5    7:5    0   258M  1 loop /snap/firefox/5751
+loop6    7:6    0  66.2M  1 loop /snap/core24/739
+loop7    7:7    0  10.7M  1 loop /snap/firmware-updater/127
+loop8    7:8    0  11.1M  1 loop /snap/firmware-updater/167
+loop9    7:9    0 505.1M  1 loop /snap/gnome-42-2204/176
+loop10   7:10   0   516M  1 loop /snap/gnome-42-2204/202
+loop11   7:11   0   1.1G  1 loop /snap/libreoffice/336
+loop12   7:12   0  91.7M  1 loop /snap/gtk-common-themes/1535
+loop13   7:13   0  10.5M  1 loop /snap/snap-store/1173
+loop14   7:14   0  38.8M  1 loop /snap/snapd/21759
+loop15   7:15   0  10.8M  1 loop /snap/snap-store/1248
+loop16   7:16   0  44.4M  1 loop /snap/snapd/23545
+loop17   7:17   0   500K  1 loop /snap/snapd-desktop-integration/178
+loop18   7:18   0   568K  1 loop /snap/snapd-desktop-integration/253
+loop19   7:19   0   449M  1 loop /snap/telegram-desktop/6504
+loop20   7:20   0 444.7M  1 loop /snap/telegram-desktop/6529
+sda      8:0    0 447.1G  0 disk 
+├─sda1   8:1    0     1G  0 part /boot/efi
+└─sda2   8:2    0 446.1G  0 part /
+
+mount — отображает список смонтированных файловых систем.
+polina@polina-UX303UA:~/OS$ mount
+sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
+proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+udev on /dev type devtmpfs (rw,nosuid,relatime,size=2945848k,nr_inodes=736462,mode=755,inode64)
+devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000)
+tmpfs on /run type tmpfs (rw,nosuid,nodev,noexec,relatime,size=596300k,mode=755,inode64)
+/dev/sda2 on / type ext4 (rw,relatime)
+securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev,inode64)
+tmpfs on /run/lock type tmpfs (rw,nosuid,nodev,noexec,relatime,size=5120k,inode64)
+cgroup2 on /sys/fs/cgroup type cgroup2 (rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot)
+pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
+efivarfs on /sys/firmware/efi/efivars type efivarfs (rw,nosuid,nodev,noexec,relatime)
+bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
+systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=3988)
+mqueue on /dev/mqueue type mqueue (rw,nosuid,nodev,noexec,relatime)
+tracefs on /sys/kernel/tracing type tracefs (rw,nosuid,nodev,noexec,relatime)
+debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
+hugetlbfs on /dev/hugepages type hugetlbfs (rw,nosuid,nodev,relatime,pagesize=2M)
+fusectl on /sys/fs/fuse/connections type fusectl (rw,nosuid,nodev,noexec,relatime)
+configfs on /sys/kernel/config type configfs (rw,nosuid,nodev,noexec,relatime)
+/var/lib/snapd/snaps/bare_5.snap on /snap/bare/5 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/core22_1564.snap on /snap/core22/1564 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/core22_1748.snap on /snap/core22/1748 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/core24_716.snap on /snap/core24/716 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/firefox_5783.snap on /snap/firefox/5783 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/firefox_5751.snap on /snap/firefox/5751 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/core24_739.snap on /snap/core24/739 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/firmware-updater_127.snap on /snap/firmware-updater/127 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/firmware-updater_167.snap on /snap/firmware-updater/167 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/gnome-42-2204_176.snap on /snap/gnome-42-2204/176 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/gnome-42-2204_202.snap on /snap/gnome-42-2204/202 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/libreoffice_336.snap on /snap/libreoffice/336 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/gtk-common-themes_1535.snap on /snap/gtk-common-themes/1535 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snap-store_1173.snap on /snap/snap-store/1173 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snap-store_1248.snap on /snap/snap-store/1248 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snapd_21759.snap on /snap/snapd/21759 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snapd_23545.snap on /snap/snapd/23545 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snapd-desktop-integration_178.snap on /snap/snapd-desktop-integration/178 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/snapd-desktop-integration_253.snap on /snap/snapd-desktop-integration/253 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/telegram-desktop_6504.snap on /snap/telegram-desktop/6504 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/var/lib/snapd/snaps/telegram-desktop_6529.snap on /snap/telegram-desktop/6529 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide,x-gvfs-hide)
+/dev/sda1 on /boot/efi type vfat (rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro)
+binfmt_misc on /proc/sys/fs/binfmt_misc type binfmt_misc (rw,nosuid,nodev,noexec,relatime)
+tmpfs on /run/snapd/ns type tmpfs (rw,nosuid,nodev,noexec,relatime,size=596300k,mode=755,inode64)
+nsfs on /run/snapd/ns/snapd-desktop-integration.mnt type nsfs (rw)
+tmpfs on /run/user/1000 type tmpfs (rw,nosuid,nodev,relatime,size=596296k,nr_inodes=149074,mode=700,uid=1000,gid=1000,inode64)
+portal on /run/user/1000/doc type fuse.portal (rw,nosuid,nodev,relatime,user_id=1000,group_id=1000)
+gvfsd-fuse on /run/user/1000/gvfs type fuse.gvfsd-fuse (rw,nosuid,nodev,relatime,user_id=1000,group_id=1000)
+nsfs on /run/snapd/ns/telegram-desktop.mnt type nsfs (rw)
+nsfs on /run/snapd/ns/firmware-updater.mnt type nsfs (rw)
+
+findmnt — отображает дерево смонтированных файловых систем
+polina@polina-UX303UA:~/OS$ findmnt
+TARGET                                            SOURCE                 FSTYPE          OPTIONS
+/                                                 /dev/sda2              ext4            rw,relatime
+├─/sys                                            sysfs                  sysfs           rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/security                          securityfs             securityfs      rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/cgroup                                cgroup2                cgroup2         rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot
+│ ├─/sys/fs/pstore                                pstore                 pstore          rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/firmware/efi/efivars                     efivarfs               efivarfs        rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/bpf                                   bpf                    bpf             rw,nosuid,nodev,noexec,relatime,mode=700
+│ ├─/sys/kernel/tracing                           tracefs                tracefs         rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/debug                             debugfs                debugfs         rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/fuse/connections                      fusectl                fusectl         rw,nosuid,nodev,noexec,relatime
+│ └─/sys/kernel/config                            configfs               configfs        rw,nosuid,nodev,noexec,relatime
+├─/proc                                           proc                   proc            rw,nosuid,nodev,noexec,relatime
+│ └─/proc/sys/fs/binfmt_misc                      systemd-1              autofs          rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=3988
+│   └─/proc/sys/fs/binfmt_misc                    binfmt_misc            binfmt_misc     rw,nosuid,nodev,noexec,relatime
+├─/dev                                            udev                   devtmpfs        rw,nosuid,relatime,size=2945848k,nr_inodes=736462,mode=755,inode64
+│ ├─/dev/pts                                      devpts                 devpts          rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000
+│ ├─/dev/shm                                      tmpfs                  tmpfs           rw,nosuid,nodev,inode64
+│ ├─/dev/mqueue                                   mqueue                 mqueue          rw,nosuid,nodev,noexec,relatime
+│ └─/dev/hugepages                                hugetlbfs              hugetlbfs       rw,nosuid,nodev,relatime,pagesize=2M
+├─/run                                            tmpfs                  tmpfs           rw,nosuid,nodev,noexec,relatime,size=596300k,mode=755,inode64
+│ ├─/run/lock                                     tmpfs                  tmpfs           rw,nosuid,nodev,noexec,relatime,size=5120k,inode64
+│ ├─/run/snapd/ns                                 tmpfs[/snapd/ns]       tmpfs           rw,nosuid,nodev,noexec,relatime,size=596300k,mode=755,inode64
+│ │ ├─/run/snapd/ns/snapd-desktop-integration.mnt nsfs[mnt:[4026532522]] nsfs            rw
+│ │ ├─/run/snapd/ns/telegram-desktop.mnt          nsfs[mnt:[4026532583]] nsfs            rw
+│ │ └─/run/snapd/ns/firmware-updater.mnt          nsfs[mnt:[4026532572]] nsfs            rw
+│ └─/run/user/1000                                tmpfs                  tmpfs           rw,nosuid,nodev,relatime,size=596296k,nr_inodes=149074,mode=700,uid=1000,gid=1000,inode64
+│   ├─/run/user/1000/gvfs                         gvfsd-fuse             fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1000,group_id=1000
+│   └─/run/user/1000/doc                          portal                 fuse.portal     rw,nosuid,nodev,relatime,user_id=1000,group_id=1000
+├─/snap/bare/5                                    /dev/loop0             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/core22/1564                               /dev/loop2             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/core22/1748                               /dev/loop1             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/core24/716                                /dev/loop3             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/firefox/5783                              /dev/loop4             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/firefox/5751                              /dev/loop5             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/core24/739                                /dev/loop6             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/firmware-updater/127                      /dev/loop7             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/firmware-updater/167                      /dev/loop8             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/gnome-42-2204/176                         /dev/loop9             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/gnome-42-2204/202                         /dev/loop10            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/libreoffice/336                           /dev/loop11            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/gtk-common-themes/1535                    /dev/loop12            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snap-store/1173                           /dev/loop13            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snap-store/1248                           /dev/loop15            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snapd/21759                               /dev/loop14            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snapd/23545                               /dev/loop16            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snapd-desktop-integration/178             /dev/loop17            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snapd-desktop-integration/253             /dev/loop18            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/boot/efi                                       /dev/sda1              vfat            rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro
+├─/snap/telegram-desktop/6504                     /dev/loop19            squashfs        ro,nodev,relatime,errors=continue,threads=single
+└─/snap/telegram-desktop/6529                     /dev/loop20            squashfs        ro,nodev,relatime,errors=continue,threads=single
+
+blkid — отображает UUID и типы файловых систем для всех устройств
+polina@polina-UX303UA:~/OS$ blkid
+/dev/sda2: UUID="86f6b514-ca55-4c58-a5c9-f5ceedf161d4" BLOCK_SIZE="4096" TYPE="ext4" PARTUUID="d85df27a-1f12-4d60-8e51-0b38d51db236"
+
+11.2
+Информация о разделах и файловых системах:
+polina@polina-UX303UA:~/OS$ lsblk -f
+NAME   FSTYPE   FSVER LABEL UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+loop0  squashfs 4.0                                                    0   100% /snap/bare/5
+loop1  squashfs 4.0                                                    0   100% /snap/core22/1748
+loop2  squashfs 4.0                                                    0   100% /snap/core22/1564
+loop3  squashfs 4.0                                                    0   100% /snap/core24/716
+loop4  squashfs 4.0                                                    0   100% /snap/firefox/5783
+loop5  squashfs 4.0                                                    0   100% /snap/firefox/5751
+loop6  squashfs 4.0                                                    0   100% /snap/core24/739
+loop7  squashfs 4.0                                                    0   100% /snap/firmware-updater/127
+loop8  squashfs 4.0                                                    0   100% /snap/firmware-updater/167
+loop9  squashfs 4.0                                                    0   100% /snap/gnome-42-2204/176
+loop10 squashfs 4.0                                                    0   100% /snap/gnome-42-2204/202
+loop11 squashfs 4.0                                                    0   100% /snap/libreoffice/336
+loop12 squashfs 4.0                                                    0   100% /snap/gtk-common-themes/1535
+loop13 squashfs 4.0                                                    0   100% /snap/snap-store/1173
+loop14 squashfs 4.0                                                    0   100% /snap/snapd/21759
+loop15 squashfs 4.0                                                    0   100% /snap/snap-store/1248
+loop16                                                                 0   100% /snap/snapd/23545
+loop17                                                                 0   100% /snap/snapd-desktop-integration/178
+loop18 squashfs 4.0                                                    0   100% /snap/snapd-desktop-integration/253
+loop19                                                                 0   100% /snap/telegram-desktop/6504
+loop20                                                                 0   100% /snap/telegram-desktop/6529
+sda                                                                             
+├─sda1 vfat     FAT32       9B99-A907                                 1G     1% /boot/efi
+└─sda2 ext4     1.0         86f6b514-ca55-4c58-a5c9-f5ceedf161d4  392.1G     5% /
+
+образ полного дерева
+
+TARGET                                            SOURCE                 FSTYPE          OPTIONS
+/                                                 /dev/sda2              ext4            rw,relatime
+├─/sys                                            sysfs                  sysfs           rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/security                          securityfs             securityfs      rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/cgroup                                cgroup2                cgroup2         rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot
+│ ├─/sys/fs/pstore                                pstore                 pstore          rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/firmware/efi/efivars                     efivarfs               efivarfs        rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/bpf                                   bpf                    bpf             rw,nosuid,nodev,noexec,relatime,mode=700
+│ ├─/sys/kernel/tracing                           tracefs                tracefs         rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/debug                             debugfs                debugfs         rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/fuse/connections                      fusectl                fusectl         rw,nosuid,nodev,noexec,relatime
+│ └─/sys/kernel/config                            configfs               configfs        rw,nosuid,nodev,noexec,relatime
+├─/proc                                           proc                   proc            rw,nosuid,nodev,noexec,relatime
+│ └─/proc/sys/fs/binfmt_misc                      systemd-1              autofs          rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=3988
+│   └─/proc/sys/fs/binfmt_misc                    binfmt_misc            binfmt_misc     rw,nosuid,nodev,noexec,relatime
+├─/dev                                            udev                   devtmpfs        rw,nosuid,relatime,size=2945848k,nr_inodes=736462,mode=755,inode64
+│ ├─/dev/pts                                      devpts                 devpts          rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000
+│ ├─/dev/shm                                      tmpfs                  tmpfs           rw,nosuid,nodev,inode64
+│ ├─/dev/mqueue                                   mqueue                 mqueue          rw,nosuid,nodev,noexec,relatime
+│ └─/dev/hugepages                                hugetlbfs              hugetlbfs       rw,nosuid,nodev,relatime,pagesize=2M
+├─/run                                            tmpfs                  tmpfs           rw,nosuid,nodev,noexec,relatime,size=596300k,mode=755,inode64
+│ ├─/run/lock                                     tmpfs                  tmpfs           rw,nosuid,nodev,noexec,relatime,size=5120k,inode64
+│ ├─/run/snapd/ns                                 tmpfs[/snapd/ns]       tmpfs           rw,nosuid,nodev,noexec,relatime,size=596300k,mode=755,inode64
+│ │ ├─/run/snapd/ns/snapd-desktop-integration.mnt nsfs[mnt:[4026532522]] nsfs            rw
+│ │ ├─/run/snapd/ns/telegram-desktop.mnt          nsfs[mnt:[4026532583]] nsfs            rw
+│ │ └─/run/snapd/ns/firmware-updater.mnt          nsfs[mnt:[4026532572]] nsfs            rw
+│ └─/run/user/1000                                tmpfs                  tmpfs           rw,nosuid,nodev,relatime,size=596296k,nr_inodes=149074,mode=700,uid=1000,gid=1000,inode64
+│   ├─/run/user/1000/gvfs                         gvfsd-fuse             fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1000,group_id=1000
+│   └─/run/user/1000/doc                          portal                 fuse.portal     rw,nosuid,nodev,relatime,user_id=1000,group_id=1000
+├─/snap/bare/5                                    /dev/loop0             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/core22/1564                               /dev/loop2             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/core22/1748                               /dev/loop1             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/core24/716                                /dev/loop3             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/firefox/5783                              /dev/loop4             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/firefox/5751                              /dev/loop5             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/core24/739                                /dev/loop6             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/firmware-updater/127                      /dev/loop7             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/firmware-updater/167                      /dev/loop8             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/gnome-42-2204/176                         /dev/loop9             squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/gnome-42-2204/202                         /dev/loop10            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/libreoffice/336                           /dev/loop11            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/gtk-common-themes/1535                    /dev/loop12            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snap-store/1173                           /dev/loop13            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snap-store/1248                           /dev/loop15            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snapd/21759                               /dev/loop14            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snapd/23545                               /dev/loop16            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snapd-desktop-integration/178             /dev/loop17            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/snap/snapd-desktop-integration/253             /dev/loop18            squashfs        ro,nodev,relatime,errors=continue,threads=single
+├─/boot/efi                                       /dev/sda1              vfat            rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro
+├─/snap/telegram-desktop/6504                     /dev/loop19            squashfs        ro,nodev,relatime,errors=continue,threads=single
+└─/snap/telegram-desktop/6529                     /dev/loop20            squashfs        ro,nodev,relatime,errors=continue,threads=single
+polina@polina-UX303UA:~/OS$ 
+
+
+polina@polina-UX303UA:~/OS$ cat /etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+# / was on /dev/sda2 during curtin installation
+/dev/disk/by-uuid/86f6b514-ca55-4c58-a5c9-f5ceedf161d4 / ext4 defaults 0 1
+# /boot/efi was on /dev/sda1 during curtin installation
+/dev/disk/by-uuid/9B99-A907 /boot/efi vfat defaults 0 1
+/swap.img	none	swap	sw	0	0
+
+Анализ таблицы:
+Корневая файловая система: Смонтирована в /. Использует UUID для идентификации устройства. Тип файловой системы — ext4. Проверяется при загрузке (pass=1).
+
+Раздел EFI: Смонтирован в /boot/efi. Использует UUID для идентификации устройства. Тип файловой системы — vfat. Проверяется при загрузке (pass=1).
+
+Файл подкачки: Использует файл /swap.img. Не монтируется в дерево файловой системы. Тип — swap. Не проверяется при загрузке (pass=0).
+
+
+11.3
+polina@polina-UX303UA:~/OS$ find 2>/dev/null / -type d | awk '{ print length, $0 }' | sort -n | tail -n 1 | cut -d' ' -f2- 
+/home/polina/snap/firefox/common/.mozilla/firefox/b0t4cau2.default/storage/default/https+++www.youtube.com^partitionKey=%28https%2Cgoogle.com%29/idb/2171031483YattIedMb.files
+
+polina@polina-UX303UA:~/OS$ getconf PATH_MAX /
+4096
+
+12.1
+file tests each argument in an attempt to classify it.  There are three sets of tests, performed in this order: filesystem tests, magic tests, and language tests.  The first test
+       that succeeds causes the file type to be printed
+
+магические числа
+polina@polina-UX303UA:~/OS$ hexdump -C task10 | head
+00000000  7f 45 4c 46 02 01 01 00  00 00 00 00 00 00 00 00  |.ELF............|
+00000010  03 00 3e 00 01 00 00 00  00 11 00 00 00 00 00 00  |..>.............|
+00000020  40 00 00 00 00 00 00 00  a0 37 00 00 00 00 00 00  |@........7......|
+00000030  00 00 00 00 40 00 38 00  0d 00 40 00 1f 00 1e 00  |....@.8...@.....|
+00000040  06 00 00 00 04 00 00 00  40 00 00 00 00 00 00 00  |........@.......|
+00000050  40 00 00 00 00 00 00 00  40 00 00 00 00 00 00 00  |@.......@.......|
+00000060  d8 02 00 00 00 00 00 00  d8 02 00 00 00 00 00 00  |................|
+00000070  08 00 00 00 00 00 00 00  03 00 00 00 04 00 00 00  |................|
+00000080  18 03 00 00 00 00 00 00  18 03 00 00 00 00 00 00  |................|
+00000090  18 03 00 00 00 00 00 00  1c 00 00 00 00 00 00 00  |................|
+
+12.2
+polina@polina-UX303UA:~/OS$ file task10
+task10: setuid ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=a62c4ecc8e8be9e57a17afcd58f30a9e8ad0b878, for GNU/Linux 3.2.0, not stripped
+polina@polina-UX303UA:~/OS$ file /bin/bash
+/bin/bash: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=2f77b36371c214e11670c7d9d92727e9a49f626b, for GNU/Linux 3.2.0, stripped
+polina@polina-UX303UA:~/OS$ file -b task3
+task3_output.txt  task3.sh          
+polina@polina-UX303UA:~/OS$ file -b task3.sh 
+Bourne-Again shell script, ASCII text executable
+
+12.3
+polina@polina-UX303UA:~/OS$ echo -ne '\xDE\xAD\xBE\xEF' > myfile.custom
+polina@polina-UX303UA:~/OS$ echo "This is a custom file type." >> myfile.custom
+polina@polina-UX303UA:~/OS$ sudo nano /usr/share/file/magic/custom
+[sudo] пароль для polina: 
+polina@polina-UX303UA:~/OS$ ls /usr/share/file/magic/
+custom
+polina@polina-UX303UA:~/OS$ file -m /usr/share/file/magic/custom myfile.custom
+myfile.custom: Custom file type
+polina@polina-UX303UA:~/OS$ file myfile.custom
+myfile.custom: ISO-8859 text
+

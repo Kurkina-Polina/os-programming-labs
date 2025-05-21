@@ -1,0 +1,741 @@
+# Куркина Полина 3384
+polina@polina-UX303UA:~/OS/lr3$ date
+Sun Apr 13 11:46:25 MSK 2025
+polina@polina-UX303UA:~/OS/lr3$ who
+polina   seat0        2025-04-13 09:43 (login screen)
+polina   tty2         2025-04-13 09:43 (tty2)
+polina@polina-UX303UA:~/OS/lr3$ lscpu
+Архитектура:              x86_64
+  CPU op-mode(s):         32-bit, 64-bit
+  Address sizes:          39 bits physical, 48 bits virtual
+  Порядок байт:           Little Endian
+CPU(s):                   4
+  On-line CPU(s) list:    0-3
+ID прроизводителя:        GenuineIntel
+  Имя модели:             Intel(R) Core(TM) i3-6100U CPU @ 2.30GHz
+    Семейство ЦПУ:        6
+    Модель:               78
+    Потоков на ядро:      2
+    Ядер на сокет:        2
+    Сокетов:              1
+    Степпинг:             3
+    CPU(s) scaling MHz:   22%
+    CPU max MHz:          2300.0000
+    CPU min MHz:          400.0000
+    BogoMIPS:             4599.93
+    Флаги:                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc ar
+                          t arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4
+                          _1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb pti ssbd ibrs ibpb stibp tpr_shadow flexpriorit
+                          y ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pt
+                          s hwp hwp_notify hwp_act_window hwp_epp vnmi md_clear flush_l1d arch_capabilities
+Virtualization features:  
+  Виртуализация:          VT-x
+Caches (sum of all):      
+  L1d:                    64 KiB (2 instances)
+  L1i:                    64 KiB (2 instances)
+  L2:                     512 KiB (2 instances)
+  L3:                     3 MiB (1 instance)
+NUMA:                     
+  NUMA node(s):           1
+  NUMA node0 CPU(s):      0-3
+Vulnerabilities:          
+  Gather data sampling:   Vulnerable: No microcode
+  Itlb multihit:          KVM: Mitigation: VMX disabled
+  L1tf:                   Mitigation; PTE Inversion; VMX conditional cache flushes, SMT vulnerable
+  Mds:                    Mitigation; Clear CPU buffers; SMT vulnerable
+  Meltdown:               Mitigation; PTI
+  Mmio stale data:        Mitigation; Clear CPU buffers; SMT vulnerable
+  Reg file data sampling: Not affected
+  Retbleed:               Mitigation; IBRS
+  Spec rstack overflow:   Not affected
+  Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl
+  Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+  Spectre v2:             Mitigation; IBRS; IBPB conditional; STIBP conditional; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected
+  Srbds:                  Mitigation; Microcode
+  Tsx async abort:        Mitigation; TSX disabled
+
+# task1.1
+polina@polina-UX303UA:~/OS/lr3$ g++ task1.1.cpp && ./a.out 
+thread1 tid: 
+313641
+started
+thread2 tid: 
+313640
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000  182271  135802  182271  182271  10472 Ss   bash
+ 1000  1000  1000  231855  182271  231855  231855   7820 T    /snap/htop/4853/usr/local/bin/htop
+ 1000  1000  1000  313639  182271  313639  313639  88284 Sl+  ./a.out
+ 1000  1000  1000  313639  182271  313639  313640  88284 Sl+  ./a.out
+ 1000  1000  1000  313639  182271  313639  313641  88284 Sl+  ./a.out
+ 1000  1000  1000  313642  313639  313639  313642   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000  1000  1000  313643  313642  313639  313643  13180 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+SIGUSRUSRSIG is working
+ ttid: 
+313640
+
+thread2 is over
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000  182271  135802  182271  182271  10472 Ss   bash
+ 1000  1000  1000  231855  182271  231855  231855   7820 T    /snap/htop/4853/usr/local/bin/htop
+ 1000  1000  1000  313639  182271  313639  313639  88284 Sl+  ./a.out
+ 1000  1000  1000  313639  182271  313639  313641  88284 Sl+  ./a.out
+ 1000  1000  1000  313644  313639  313639  313644   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000  1000  1000  313645  313644  313639  313645  13180 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+the end
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000  182271  135802  182271  182271  10472 Ss   bash
+ 1000  1000  1000  231855  182271  231855  231855   7820 T    /snap/htop/4853/usr/local/bin/htop
+ 1000  1000  1000  313639  182271  313639  313639  88284 S+   ./a.out
+ 1000  1000  1000  313646  313639  313639  313646   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000  1000  1000  313647  313646  313639  313647  13180 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+
+
+#task1.2
+thread2 tid: 
+313877
+thread1 tid: 
+313878
+
+started
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000  182271  135802  182271  182271  10472 Ss   bash
+ 1000  1000  1000  231855  182271  231855  231855   7820 T    /snap/htop/4853/usr/local/bin/htop
+ 1000  1000  1000  313876  182271  313876  313876  88284 Sl+  ./a.out
+ 1000  1000  1000  313876  182271  313876  313877  88284 Sl+  ./a.out
+ 1000  1000  1000  313876  182271  313876  313878  88284 Sl+  ./a.out
+ 1000  1000  1000  313879  313876  313876  313879   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000  1000  1000  313880  313879  313876  313880  13180 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+
+USRSIG is working
+ ttid: 313877
+Thread 2: Executing pthread_exit() from handler
+
+after SIGUSR
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000  182271  135802  182271  182271  10472 Ss   bash
+ 1000  1000  1000  231855  182271  231855  231855   7820 T    /snap/htop/4853/usr/local/bin/htop
+ 1000  1000  1000  313876  182271  313876  313876 153820 Sl+  ./a.out
+ 1000  1000  1000  313876  182271  313876  313878 153820 Sl+  ./a.out
+ 1000  1000  1000  313881  313876  313876  313881   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000  1000  1000  313882  313881  313876  313882  13180 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+kill 2
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000  182271  135802  182271  182271  10472 Ss   bash
+ 1000  1000  1000  231855  182271  231855  231855   7820 T    /snap/htop/4853/usr/local/bin/htop
+ 1000  1000  1000  313876  182271  313876  313876 153820 Sl+  ./a.out
+ 1000  1000  1000  313876  182271  313876  313878 153820 Sl+  ./a.out
+ 1000  1000  1000  313883  313876  313876  313883   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000  1000  1000  313884  313883  313876  313884  13180 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+
+
+#в первом случае вторая нить выполнила все что находилось в нее функции что заметно по выведенной строке "thread2 is over" во втром случае поток прервался из цикла и функция не была отработана полностью
+#дополнителый вывод о tid для того, чтобы убедиться что в обоих случаях поток был завершен ведь в выводе нет его tid
+
+# task2.1
+proc pid: 315205
+working
+working
+working
+^CUSRSIG proc is over
+
+
+# task2.2
+thread22 tid: 314915
+thread22
+thread22
+thread22
+^CUSRSIG thread22 is over
+
+#task2.3
+new proc pid: 318170
+count of runs:4
+^CUSRSIG count of runs:3
+^CUSRSIG count of runs:2
+^CUSRSIG count of runs:1
+count of runs:1
+^CUSRSIG  is over
+^C
+
+
+# task2.4
+thread24 tid: 316923
+thread24
+thread24
+thread24
+^CUSRSIG thread24
+thread24
+^CUSRSIG thread24
+^CUSRSIG thread24
+^CUSRSIG thread24 is over
+^C
+
+# можно заметить отличие обработки сигналов процессами и потоками. В случае процесса возникла необходимость блокировать обработчик в основном процессе, чтобы программа не завершалась
+# в случае потока такой необходимости не было, ведь сигнал одправляется всему процессу а не потоку, а обрабатывает сигнал тот поток, который не блокирует его
+
+#task2.5
+thread24 tid: 318608
+thread24
+thread24
+thread24
+^ZUSRSIG thread24
+thread24
+^ZUSRSIG thread24
+thread24
+^ZUSRSIG thread24
+thread24
+^ZUSRSIG thread24 is over
+^Z
+[2]+  Остановлен    ./a.out
+
+# task3.1
+# с одного терминала:
+kill -USR1 319602
+
+# сдругого:
+USRSIG 
+USRSIG 
+^C^CUSRSIG 
+^CUSRSIG 
+^CUSRSIG 
+USRSIG 
+^C
+SIG INT 
+^C
+
+# можем видеть как образовалась линейка сигналов: пока usrsig не завершил работу, SIGINT никак не влиял не работу программы
+
+# проверка что флаг установлен верно 
+SIG TERM 
+Завершено
+
+
+# task3.2
+
+^Z^Z^Z^Z^Z^ZSIGNAL SIGINT called!
+SIGNAL SIGINT called!
+SIGNAL SIGINT called!
+SIGNAL SIGINT called!
+SIGNAL SIGINT called!
+SIGNAL SIGINT called!
+^C
+
+#task4.1
+signal reseived 34
+signal info 34
+signal reseived 35
+signal info 35
+signal reseived 36
+signal info 36
+signal reseived 37
+signal info 37
+signal reseived 38
+signal info 38
+signal reseived 39
+signal info 39
+signal reseived 40
+signal info 40
+signal reseived 41
+signal info 41
+signal reseived 42
+signal info 42
+signal reseived 44
+signal info 44
+signal reseived 43
+signal info 43
+signal reseived 45
+signal info 45
+signal reseived 46
+signal info 46
+signal reseived 47
+signal info 47
+signal reseived 48
+signal info 48
+signal reseived 50
+signal info 50
+signal reseived 49
+signal info 49
+signal reseived 51
+signal info 51
+signal reseived 52
+signal info 52
+signal reseived 53
+signal info 53
+signal reseived 54
+signal info 54
+signal reseived 64
+signal info 64
+signal reseived 55
+signal info 55
+signal reseived 63
+signal info 63
+signal reseived 62
+signal info 62
+signal reseived 56
+signal info 56
+signal reseived 61
+signal info 61
+signal reseived 59
+signal info 59
+signal reseived 57
+signal info 57
+signal reseived 58
+signal info 58
+signal reseived 60
+signal info 60
+ 
+# самый высокий приоритет у сигнала с меньшим номером, поэтому они выполняются раньше, несмотря на то что добавлены последними.
+
+#4.2
+Senging signal 15 ret = 0
+Senging signal 14 ret = 0
+Senging signal 13 ret = 0
+Senging signal 11 ret = 0
+Senging signal 8 ret = 0
+Senging signal 6 ret = 0
+Senging signal 5 ret = 0
+Senging signal 4 ret = 0
+Senging signal 3 ret = 0
+Senging signal 2 ret = 0
+Senging signal 1 ret = 0
+signal received 1
+signal received 2
+signal received 3
+signal received 4
+signal received 5
+signal received 6
+signal received 8
+signal received 11
+signal received 13
+signal received 14
+signal received 15
+
+# таким образом у сигналов не реального времени тоже есть приоритеты
+
+# task4.3
+#так как создание очереди было продемонстрировано уже для сигналов реального времени, обычных сигналов в предыдущем пункте, то в этом реализация для смешанного набора
+polina@polina-UX303UA:~/OS/lr3$ g++ -std=c++23 task4.3.cpp && ./a.out 
+signal 12 received 
+signal 10 received 
+signal 2 received 
+signal 34 received 
+signal 35 received 
+signal 36 received 
+signal 37 received 
+signal 38 received 
+signal 39 received 
+signal 40 received 
+signal 41 received 
+signal 42 received 
+signal 43 received 
+signal 44 received 
+signal 45 received 
+signal 46 received 
+signal 49 received 
+signal 47 received 
+signal 48 received 
+signal 64 received 
+signal 50 received 
+signal 63 received 
+signal 62 received 
+signal 51 received 
+signal 61 received 
+signal 60 received 
+signal 52 received 
+signal 59 received 
+signal 53 received 
+signal 58 received 
+signal 54 received 
+signal 56 received 
+signal 55 received 
+signal 57 received
+
+#task4.4
+polina@polina-UX303UA:~/OS/lr3$ g++ -std=c++23 task4.4.cpp && ./a.out 
+number 0 received 
+number 1 received 
+number 2 received 
+number 3 received 
+number 4 received 
+number 5 received 
+number 6 received 
+number 7 received 
+number 8 received 
+number 9 received 
+
+# number это порядковый номер 
+
+#task5.1
+# был выполнен через спинлок
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+# демострация что находится в файле который использовался как общая память. я специально не удаляла этот файл в конце работы программы, чтобы продемонстрировать где он находится
+polina@polina-UX303UA:~/OS/lr3$ cat /dev/shm/task51 
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+#task5.2
+# был выполнен через семафор
+polina@polina-UX303UA:~/OS/lr3$ g++ task5.2.cpp && ./a.out 
+9
+9
+9
+9
+9
+9
+9
+9
+9
+9
+
+
+#task5.2.2
+# был выполнен через мьютекс
+polina@polina-UX303UA:~/OS/lr3$ g++ task5.2.2.cpp && ./a.out 
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+
+# task5.3
+# был выполнен через мьютекс. с потоками намного проще, тк создавать общую память не нужно. у потоков и так общая память
+polina@polina-UX303UA:~/OS/lr3$ g++ task5.3.cpp && ./a.out 
+9
+9
+9
+9
+9
+9
+9
+9
+9
+9
+
+# результаты разные из-за немного разного подхода: в 5.2 и 5.3 случае в общую память перезаписывался один символ: в итоге осталась только 9. Алгоритм ожидания работат верно, но из-за слишком маленького примера все 10 операций выполняются слишком быстро. Возможно что это связано также с доступом к экрану или с тем что буфер сначала накапливается прежде чем вывести
+# во 5.2.2 и 5.1 пунктах продемонстрирован немного другой подход: записяваем по одному символу, не удаляя старые. Логика работы никак не изменилась по сути, тк все равно сначала отрабатывает запись а потом чтение по причине описанной выше
+
+# task6.1
+# Каналы (pipe) — это один из самых простых способов межпроцессного взаимодействия (IPC) в Unix-подобных системах.
+# Они позволяют передавать данные между процессами в одном направлении (полудуплексный режим)
+
+polina@polina-UX303UA:~/OS/lr3$ ps aux | grep "a.out" 
+polina      5177  0.0  0.0   6356  3416 pts/1    T    06:53   0:05 ./a.out
+polina      5178  0.0  0.0      0     0 pts/1    Z    06:53   0:00 [a.out] <defunct>
+polina      6888  0.0  0.0   6356   388 pts/1    S    07:46   0:00 ./a.out
+polina      6908  0.0  0.0   6356   396 pts/1    S    07:47   0:00 ./a.out
+polina      6944  0.0  0.0   6356   388 pts/1    S    07:48   0:00 ./a.out
+polina      8378  0.0  0.0   6744  2396 pts/1    S+   08:27   0:00 grep --color=auto a.out
+
+polina@polina-UX303UA:~/OS/lr3$ cat /proc/sys/fs/pipe-
+pipe-max-size         pipe-user-pages-hard  pipe-user-pages-soft  
+polina@polina-UX303UA:~/OS/lr3$ cat /proc/sys/fs/pipe-*
+1048576 # максимальный размер
+0 # жёсткое ограничение на общий размер (в страницах) всех каналов,
+16384 # мягкое ограничение на общий размер (в страницах) всех каналов,
+
+
+polina@polina-UX303UA:~/OS/lr3$ g++ task6.1.cpp && ./a.out 
+Child received: Parent
+
+
+# task6.2
+#FIFO (First In, First Out) — это именованный канал, который позволяет обмениваться данными между независимыми процессами (в отличие от анонимных pipe)
+#Основное отличие между pipe и FIFO в том, что pipe могут совместно использовать только процессы, 
+#находящиеся в отношении родительский-дочерний, а FIFO может использовать любая пара процессов
+
+# terminal 1
+polina@polina-UX303UA:~/OS/lr3$ mkfifo /tmp/myfifo
+polina@polina-UX303UA:~/OS/lr3$ ls -l /tmp/myfifo
+prw-rw-r-- 1 polina polina 0 Apr 21 08:47 /tmp/myfifo
+polina@polina-UX303UA:~/OS/lr3$ cat < /tmp/myfifo
+Hello FIFO!
+
+# удаление
+polina@polina-UX303UA:~/OS/lr3$ rm /tmp/myfifo
+
+#terminal2
+polina@polina-UX303UA:~/OS/lr3$ echo "Hello FIFO!" > /tmp/myfifo
+
+# программная реализация этих же действий
+polina@polina-UX303UA:~/OS/lr3$ g++ task6.2.cpp && ./a.out 
+FIFO created at /tmp/myfifo
+Received: writer
+
+polina@polina-UX303UA:~/OS/lr3$ ls -l /tmp/myfifo
+prw-rw-r-- 1 polina polina 0 Apr 21 09:00 /tmp/myfifo
+# p - pipe
+
+polina@polina-UX303UA:~/OS/lr3$ file /tmp/myfifo
+/tmp/myfifo: fifo (named pipe)
+
+# task6.3
+# task6.3_write_first.cpp сначала записывает строку в fifo потом читает оттуда 
+# task6.3_read_first.cpp сначала читает строку из fifo  потом записывает туда
+# получается некий почтовый ящик, процессы никак не синхронизированы друг с другом но могут обмениваться данными
+polina@polina-UX303UA:~/OS/lr3$ g++ task6.3_write_first.cpp && ./a.out 
+hello1
+User2: hello2
+
+^C
+
+polina@polina-UX303UA:~/OS/lr3$ g++ task6.3_read_first.cpp && ./a.out 
+User1: hello1
+
+hello2
+User1: hello1
+
+^C
+
+#дополнение про очереди:
+# POSIX Message Queues реализуются через mq_open и имеют несколько отличий:
+#1. получатель и отправитель полностью независимы
+#2. сообщения храняться в ядре 
+#3. может хранить несколько сообщений
+#вот некоторые файлы конфигурации очередей в линуксе:
+
+polina@polina-UX303UA:~$ ls /proc/sys/fs/mqueue
+msg_default  msg_max  msgsize_default  msgsize_max  queues_max
+polina@polina-UX303UA:~$ sudo cat /proc/sys/fs/mqueue/*
+10                   # максимальный размер очереди по умолчанию
+10                   # максимальный возможный размер очереди
+8192                 # максимальный размер сообщения по умолчанию
+8192                 # максимальный возможный размер сообщения
+256                  # максимальное количество очередей в системе
+# хранение в виртуальных файлах в /dev/mqueue/
+# во время работы программы можно увидеть следующее:
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb3/task6$ sudo cat /dev/mqueue/*
+QSIZE:0          NOTIFY:0     SIGNO:0     NOTIFY_PID:0     
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb3/task6$ sudo ls /dev/mqueue/
+test_mailbox
+
+
+#запуск файла task6.3_posix_message_queue.cpp
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb3/task6$ ./a.out 
+Отправлено: Сообщение для почтового ящика
+Получено (56 байт): Сообщение для почтового ящика
+
+
+
+# как оказалось, есть еще  System V Message Queues. Они тоже имеют свои отличия. Вот некоторые от предыдущей системы очередей
+1. нет приоритетов сообщений
+2. нет файлового представления (posix queues хранит в виртуальных файлах в /dev/mqueue/
+3. управляются через /proc/sys/kernel/msg*
+
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb3/task6$ sudo ls /proc/sys/kernel/msg*
+/proc/sys/kernel/msgmax  /proc/sys/kernel/msgmnb  /proc/sys/kernel/msgmni  /proc/sys/kernel/msg_next_id
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb3/task6$ sudo cat /proc/sys/kernel/msg*
+8192
+16384
+32000
+-1
+
+
+#запуск файла task6.3_systemVqueue.cpp
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb3/task6$ g++ task6.3_systemVqueue.cpp && ./a.out 
+Сообщение отправлено: Сообщение для почтового ящика
+Получено сообщение: Сообщение для почтового ящика
+
+
+
+# task7.1
+#Сокеты - это средство, позволяющее осуществлять связь между двумя различными процессами через один и тот же или разные компьютеры / сети
+#Использовались  семейство сокетов AF_INET, стандартный тип сокета для TCP подключения.
+
+#terminal1
+polina@polina-UX303UA:~/OS/lr3$ gcc task7/server.c -o server
+polina@polina-UX303UA:~/OS/lr3$ gcc task7/client.c -o client
+polina@polina-UX303UA:~/OS/lr3$ ./server 
+Server listening on port 8080...
+Hello from client
+Hello message sent
+
+#terminal2
+polina@polina-UX303UA:~/OS/lr3$ ./client 
+Hello message sent
+Hello from server
+
+# ключевое различие между tcp udp  в том что клиент udp не фолрмирует подключения к серверу, а просто отправляет датаграмм. 
+# Соответсвенно udp сервер не нуждается в подтверждении подключения, он просто ждет когда ему отправят датаграмм
+
+# task7.2
+#terminal1
+polina@polina-UX303UA:~/OS/lr3$ g++ task7/2/client.cpp -o client && g++ task7/2/server.cpp -o server 
+polina@polina-UX303UA:~/OS/lr3$ ./server 
+Client : Hello from client
+Hello message sent.
+
+#terminal2
+polina@polina-UX303UA:~/OS/lr3$ ./client 
+Hello message sent.
+Server :Hello from server
+
+# task7.3
+# можно убедиться что порты слушаются и каким именно протоколом
+polina@polina-UX303UA:~/OS/lr3$ ss -tulnp | grep 5000
+tcp   LISTEN 0      10           0.0.0.0:5000       0.0.0.0:*    users:(("socket_test",pid=18217,fd=3))   
+polina@polina-UX303UA:~/OS/lr3$ ss -tulnp | grep 5001
+udp   UNCONN 0      0            0.0.0.0:5001       0.0.0.0:*    users:(("socket_test",pid=18217,fd=5))   
+
+# для проведения тестов необходимо было отлючить брэндмауэр временно
+polina@polina-UX303UA:~/OS/lr3$ sudo ufw disable
+[sudo] пароль для polina: 
+Межсетевой экран отключён и не будет запускаться при запуске системы
+
+
+#terminal1  (сокращенный вывод) сервер
+polina@polina-UX303UA:~/OS/lr3$ ./socket_test -s
+Starting servers...
+TCP server listening on port 5000
+UDP server listening on port 5001
+TCP client connected: 127.0.0.1:51034
+TCP client connected: 127.0.0.1:51038
+TCP client connected: 127.0.0.1:51050
+TCP client connected: 127.0.0.1:51052
+TCP client connected: 127.0.0.1:51056
+TCP client connected: 127.0.0.1:51070
+TCP client connected: 127.0.0.1:51078
+TCP client connected: 127.0.0.1:51080
+TCP client connected: 127.0.0.1:51084
+TCP client connected: 127.0.0.1:51098
+Received UDP packet from 127.0.0.1:45012
+Received UDP packet from 127.0.0.1:45012
+Received UDP packet from 127.0.0.1:45012
+Received UDP packet from 127.0.0.1:45012
+Received UDP packet from 127.0.0.1:45012
+Received UDP packet from 127.0.0.1:45012
+Received UDP packet from 127.0.0.1:45012
+Received UDP packet from 127.0.0.1:45012
+Received UDP packet from 127.0.0.1:45012
+Received UDP packet from 127.0.0.1:45012
+...
+TCP client connected: 127.0.0.1:42772
+TCP client connected: 127.0.0.1:42782
+TCP client connected: 127.0.0.1:42784
+TCP client connected: 127.0.0.1:42796
+TCP client connected: 127.0.0.1:42806
+TCP client connected: 127.0.0.1:42822
+TCP client connected: 127.0.0.1:42828
+TCP client connected: 127.0.0.1:42844
+TCP client connected: 127.0.0.1:42852
+...
+Received UDP packet from 127.0.0.1:56084
+Received UDP packet from 127.0.0.1:56084
+Received UDP packet from 127.0.0.1:56084
+Received UDP packet from 127.0.0.1:56084
+Received UDP packet from 127.0.0.1:56084
+...
+TCP client connected: 127.0.0.1:43674
+TCP client connected: 127.0.0.1:43676
+TCP client connected: 127.0.0.1:43690
+TCP client connected: 127.0.0.1:43696
+TCP client connected: 127.0.0.1:43712
+TCP client connected: 127.0.0.1:43714
+TCP client connected: 127.0.0.1:43730
+TCP client connected: 127.0.0.1:43742
+TCP client connected: 127.0.0.1:43750
+Received UDP packet from 127.0.0.1:48127
+Received UDP packet from 127.0.0.1:48127
+Received UDP packet from 127.0.0.1:48127
+Received UDP packet from 127.0.0.1:48127
+Received UDP packet from 127.0.0.1:48127
+Received UDP packet from 127.0.0.1:48127
+Received UDP packet from 127.0.0.1:48127
+Received UDP packet from 127.0.0.1:48127
+Received UDP packet from 127.0.0.1:48127
+...
+
+#terminal2 клиент
+polina@polina-UX303UA:~/OS/lr3$ ./socket_test -c localhost 10
+Testing with 10 messages
+TCP: Sent 10 messages in 0.0023878 seconds
+UDP: Sent 10 messages in 0.00121729 seconds
+
+polina@polina-UX303UA:~/OS/lr3$ ./socket_test -c localhost 100
+Testing with 100 messages
+TCP: Sent 100 messages in 0.0049624 seconds
+UDP: Sent 100 messages in 0.00382913 seconds
+
+TCP: Sent 1000 messages in 0.0946012 seconds
+UDP: Sent 1000 messages in 0.0846065 seconds
+
+# можем заметить что при tcp подключении порт всегджа разный из-за нового подключения клиента
+# у udp подключения всегда один и тот же адрес тк соединения не устанавливаются, отправляются датаграммы. Используется один и тот же сокет
+# по этой же причине tcp подключение медленнее чем udp
+
+# некоторые функции для анализа подключений
+
+
+Просмотр всех сетевых подключений
+polina@polina-UX303UA:~/OS/lr3$ ss -tulnp
+Netid          State           Recv-Q          Send-Q                   Local Address:Port                     Peer Address:Port          Process                                             
+udp            UNCONN          0               0                          224.0.0.251:5353                          0.0.0.0:*              users:(("yandex_browser",pid=3686,fd=95))          
+udp            UNCONN          0               0                              0.0.0.0:5353                          0.0.0.0:*                                                                 
+udp            UNCONN          0               0                              0.0.0.0:42837                         0.0.0.0:*                                                                 
+udp            UNCONN          0               0                           127.0.0.54:53                            0.0.0.0:*                                                                 
+udp            UNCONN          0               0                        127.0.0.53%lo:53                            0.0.0.0:*                                                                 
+udp            UNCONN          0               0                                 [::]:5353                             [::]:*                                                                 
+udp            UNCONN          0               0                                 [::]:40226                            [::]:*                                                                 
+tcp            LISTEN          0               4096                        127.0.0.54:53                            0.0.0.0:*                                                                 
+tcp            LISTEN          0               4096                         127.0.0.1:36197                         0.0.0.0:*                                                                 
+tcp            LISTEN          0               4096                     127.0.0.53%lo:53                            0.0.0.0:*                                                                 
+tcp            LISTEN          0               4096                         127.0.0.1:631                           0.0.0.0:*                                                                 
+tcp            LISTEN          0               4096                             [::1]:631                              [::]:*                                                                 
+
+
+Фильтрация по порту/протоколу
+polina@polina-UX303UA:~/OS/lr3$ ss -tlnp | grep 4096
+LISTEN 0      4096      127.0.0.54:53         0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:36197      0.0.0.0:*          
+LISTEN 0      4096   127.0.0.53%lo:53         0.0.0.0:*          
+LISTEN 0      4096       127.0.0.1:631        0.0.0.0:*          
+LISTEN 0      4096           [::1]:631           [::]:*          
+
+
+Проверка подключений к конкретному порту
+sudo lsof -i :5000
+
+Конфигурационные файлы
+Файл	Назначение
+/etc/hosts	Локальное разрешение имён (аналог DNS)
+/etc/services	Соответствие портов и сервисов (например, 5000/tcp)
+/etc/resolv.conf	Настройки DNS-серверов
+/etc/nsswitch.conf	Порядок разрешения имён (files → DNS)
+/etc/sysctl.conf	Параметры ядра (например, net.ipv4.tcp_fin_timeout)
+
+Таймаут закрытия TCP-сессии
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb3$ cat /proc/sys/net/ipv4/tcp_fin_timeout
+60
+
+
+Проверка доступности порта
+bash
+telnet 127.0.0.1 5000  # Для TCP
+nc -zv 127.0.0.1 5001  # Для UDP
+
+Трассировка системных вызовов
+bash
+strace -f ./socket_test -s  # Для сервера
+strace -f ./socket_test -c 127.0.0.1 10  # Для клиента
+

@@ -1,0 +1,3482 @@
+#Лабораторная работа №2 Управление процессами и потоками
+#Куркина Полина г. 3384
+
+1.1
+polina@polina-UX303UA:~$ date
+Wed Mar 5 10:42:24 MSK 2025
+
+polina@polina-UX303UA:~/OS$ yes "OS is super" > /dev/null & cat *.* > temp1.txt & ./task1.sh & ./a.out > temp2.txt & lpr temp1.txt &
+[3] 265144
+[4] 265145
+[5] 265146
+[6] 265147
+[7] 265148
+polina@polina-UX303UA:~/OS$ cat: moo.txt: Отказано в доступе
+cat: soft_link1.c: Нет такого файла или каталога
+jobs -l
+[1]- 264044 Остановлено  vi foo.txt
+[2]+ 264109 Остановлено  less /etc/sysctl.conf
+[3]  265144 Запущен          yes "OS is super" > /dev/null &
+[4]  265145 Выход 1            cat *.* > temp1.txt
+[5]  265146 Завершён        ./task1.sh
+[6]  265147 Запущен          ./a.out > temp2.txt &
+[7]  265148 Завершён        lpr temp1.txt
+
+polina@polina-UX303UA:~/OS$ jobs -l
+[1]- 264044 Остановлено  vi foo.txt
+[2]+ 264109 Остановлено  less /etc/sysctl.conf
+[3]  265144 Запущен          yes "OS is super" > /dev/null &
+[6]  265147 Запущен          ./a.out > temp2.txt &
+polina@polina-UX303UA:~/OS$ fg %1
+vi foo.txt
+polina@polina-UX303UA:~/OS$ jobs -l
+[2]+ 264109 Остановлено  less /etc/sysctl.conf
+[3]  265144 Запущен          yes "OS is super" > /dev/null &
+[6]- 265147 Запущен          ./a.out > temp2.txt &
+polina@polina-UX303UA:~/OS$ fg %2
+less /etc/sysctl.conf
+polina@polina-UX303UA:~/OS$ jobs -l
+[3]- 265144 Запущен          yes "OS is super" > /dev/null &
+[6]+ 265147 Запущен          ./a.out > temp2.txt &
+polina@polina-UX303UA:~/OS$ fg %6
+./a.out > temp2.txt
+^Z
+[6]+  Остановлен    ./a.out > temp2.txt
+polina@polina-UX303UA:~/OS$ jobs -l
+[3]- 265144 Запущен          yes "OS is super" > /dev/null &
+[6]+ 265147 Остановлено  ./a.out > temp2.txt
+polina@polina-UX303UA:~/OS$ fg %6
+./a.out > temp2.txt
+
+^C
+polina@polina-UX303UA:~/OS$ jobs -l
+[3]+ 265144 Запущен          yes "OS is super" > /dev/null &
+polina@polina-UX303UA:~/OS$ bg %3
+bash: bg: задание 3 уже выполняется в фоновом режиме
+polina@polina-UX303UA:~/OS$ fg %3
+yes "OS is super" > /dev/null
+^Z
+[3]+  Остановлен    yes "OS is super" > /dev/null
+polina@polina-UX303UA:~/OS$ jobs -l
+[3]+ 265144 Остановлено  yes "OS is super" > /dev/null
+polina@polina-UX303UA:~/OS$ fg %3
+yes "OS is super" > /dev/null
+^Z
+[3]+  Остановлен    yes "OS is super" > /dev/null
+
+
+
+
+1.2
+polina@polina-UX303UA:~/OS$ ps -a
+    PID TTY          TIME CMD
+   2160 tty2     00:00:00 gnome-session-b
+ 265519 pts/1    00:00:00 ps
+polina@polina-UX303UA:~$  yes "testing nohup" > /dev/null
+polina@polina-UX303UA:~/OS$ ps -a
+    PID TTY          TIME CMD
+   2160 tty2     00:00:00 gnome-session-b
+ 265525 pts/0    00:00:02 yes
+ 265526 pts/1    00:00:00 ps
+polina@polina-UX303UA:~/OS$ ps -a
+    PID TTY          TIME CMD
+   2160 tty2     00:00:00 gnome-session-b
+ 265813 pts/1    00:00:00 ps
+
+1.2
+polina@polina-UX303UA:~/OS$ ps -a
+    PID TTY          TIME CMD
+   2160 tty2     00:00:00 gnome-session-b
+ 265986 pts/2    00:00:03 yes
+ 265987 pts/0    00:00:03 a.out
+ 265988 pts/1    00:00:00 ps
+
+polina@polina-UX303UA:~/OS$ top
+
+top - 23:43:40 up 7 days, 11:02,  1 user,  load average: 13.72, 11.60, 8.95
+Задачи: 291 total,   7 running, 283 sleeping,   0 stopped,   1 zombie
+%Cpu(s): 70.3 us, 29.7 sy,  0.0 ni,  0.0 id,  0.0 wa,  0.0 hi,  0.1 si,  0.0 st 
+МиБ Mem :   5823.2 total,    158.4 free,   2829.4 used,   3864.3 buff/cache     
+МиБ Swap:   4096.0 total,   1906.0 free,   2190.0 used.   2993.9 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ КОМАНДА                                                                          
+ 268219 polina    20   0    6352   3200   3072 R  92.5   0.1  10:40.19 a.out                                                                            
+ 268398 polina    20   0    6208   2304   2176 R  83.3   0.0   3:16.69 yes                                                                              
+ 267397 polina    20   0    6352   3200   3072 R  81.7   0.1  24:10.77 a.out                                                                            
+ 268214 polina    20   0    6208   2304   2176 R  81.7   0.0  11:47.02 yes                                                                              
+ 268380 polina    20   0 1161.8g 124188  94428 S   8.2   2.1   0:00.51 yandex_browser                                                                   
+ 268638 polina    20   0    6208   2304   2176 D   7.8   0.0   0:10.94 yes                                                                              
+ 260662 polina    20   0   33.0g 252608 163572 S   5.9   4.2   3:45.87 yandex_browser                                                                   
+     47 root      20   0       0      0      0 S   5.2   0.0  15:38.59 kcompactd0                                                                       
+     65 root      20   0       0      0      0 S   4.9   0.0   8:41.69 kswapd0                                                                          
+ 260712 polina    20   0   32.9g 120480  86172 R   4.6   2.0   1:17.52 yandex_browser                                                                   
+ 267604 polina    20   0    6208   2304   2176 D   4.6   0.0   1:47.70 yes                                                                              
+ 265915 polina    20   0    6208   2384   2244 D   4.2   0.0  13:16.78 yes                                                                              
+ 267398 polina    20   0    6208   2304   2176 D   3.9   0.0   2:18.03 yes                                                                              
+ 262934 polina    20   0 1161.7g  49488  44328 S   3.6   0.8   4:31.81 code                                                                             
+ 263394 polina    20   0  739280  73836  51772 S   1.0   1.2   3:54.04 gnome-terminal-                                                                  
+ 268298 root      20   0       0      0      0 D   1.0   0.0   0:03.63 kworker/u8:3+flush-8:0                                                           
+ 269196 polina    20   0   12048   5888   3840 R   1.0   0.1   0:00.06 top                                                                              
+ 267324 root      20   0       0      0      0 R   0.7   0.0   0:42.04 kworker/u8:2+i915                                                                
+ 268415 root      20   0       0      0      0 D   0.7   0.0   0:02.42 kworker/u8:4+flush-8:0                                                           
+    147 root       0 -20       0      0      0 I   0.3   0.0   0:47.22 kworker/3:1H-kblockd                                                             
+    149 root       0 -20       0      0      0 I   0.3   0.0   1:17.29 kworker/0:1H-kblockd                                                             
+    599 systemd+  20   0   17556   2192   2028 S   0.3   0.0   3:32.81 systemd-oomd                                                                     
+    626 root     -51   0       0      0      0 S   0.3   0.0   7:43.05 irq/132-iwlwifi                                                                  
+    877 root      20   0  311228   3732   3272 S   0.3   0.1   2:43.54 iio-sensor-prox                                                                  
+   2294 polina    20   0 5274596 207700  97176 S   0.3   3.5 303:35.69 gnome-shell                                                                      
+   3139 polina    20   0 2111324  27784  16012 S   0.3   0.5   0:57.66 xdg-desktop-por                                                                  
+ 239476 polina    20   0 1161.7g 170880  45240 S   0.3   2.9  36:42.63 code                                                                             
+ 239523 polina    20   0 1161.7g  46112  41940 S   0.3   0.8   2:01.64 code  
+
+1.2
+polina@polina-UX303UA:~/OS$ yes "testing nohup" > /dev/null &
+[2] 269977
+#(окно #2)
+polina@polina-UX303UA:~/OS$ kill -HUP 269977
+#(окно №1)
+polina@polina-UX303UA:~/OS$ jobs
+[1]+  Остановлен    268214 polina 20 0 6208 2304 2176 R 81.7 0.0 11:47.02 yes
+[2]-  Обрыв терминальной линии                      yes "testing nohup" > /dev/null
+
+polina@polina-UX303UA:~/OS$ ps -a
+    PID TTY          TIME CMD
+   2160 tty2     00:00:00 gnome-session-b
+ 269348 pts/1    00:00:00 bash
+ 269349 pts/1    00:00:00 command-not-fou
+ 269350 pts/1    00:00:00 snap
+ 270003 pts/0    00:00:00 vim
+ 270011 pts/1    00:00:00 ps
+
+#процесс остановился
+
+ polina@polina-UX303UA:~/OS$ nohup yes "testing nohup" > /dev/null &
+[2] 270030
+polina@polina-UX303UA:~/OS$ nohup: ввод игнорируется и поток ошибок перенаправляется на стандартный вывод
+
+
+polina@polina-UX303UA:~/OS$ kill -HUP 270030
+polina@polina-UX303UA:~/OS$ ps -a
+    PID TTY          TIME CMD
+   2160 tty2     00:00:00 gnome-session-b
+ 270165 pts/1    00:00:27 yes
+ 270192 pts/0    00:00:00 ps
+ 
+ # таким образом команда nohup запускает процесс, который будет игнорировать системный сигнал  SIGHUP, посылаемый процессу для уведомления о потере соединения с управляющим терминалом пользователя. Без этой команды процесс будет остановлен. 
+ 
+ 1.3
+ polina@polina-UX303UA:~$ ps -ef
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 08:56 ?        00:00:04 /sbin/init splash
+root           2       0  0 08:56 ?        00:00:00 [kthreadd]
+root           3       2  0 08:56 ?        00:00:00 [pool_workqueue_release]
+root           4       2  0 08:56 ?        00:00:00 [kworker/R-rcu_gp]
+root           5       2  0 08:56 ?        00:00:00 [kworker/R-sync_wq]
+root           6       2  0 08:56 ?        00:00:00 [kworker/R-slub_flushwq]
+root           7       2  0 08:56 ?        00:00:00 [kworker/R-netns]
+root           8       2  0 08:56 ?        00:00:00 [kworker/0:0-events]
+root           9       2  0 08:56 ?        00:00:00 [kworker/0:0H-events_highpri
+root          12       2  0 08:56 ?        00:00:00 [kworker/R-mm_percpu_wq]
+root          13       2  0 08:56 ?        00:00:00 [rcu_tasks_kthread]
+root          14       2  0 08:56 ?        00:00:00 [rcu_tasks_rude_kthread]
+root          15       2  0 08:56 ?        00:00:00 [rcu_tasks_trace_kthread]
+root          16       2  0 08:56 ?        00:00:01 [ksoftirqd/0]
+root          17       2  0 08:56 ?        00:00:00 [rcu_preempt]
+root          18       2  0 08:56 ?        00:00:00 [rcu_exp_par_gp_kthread_work
+root          19       2  0 08:56 ?        00:00:00 [rcu_exp_gp_kthread_worker]
+root          20       2  0 08:56 ?        00:00:00 [migration/0]
+root          21       2  0 08:56 ?        00:00:00 [idle_inject/0]
+root          22       2  0 08:56 ?        00:00:00 [cpuhp/0]
+root          23       2  0 08:56 ?        00:00:00 [cpuhp/1]
+root          24       2  0 08:56 ?        00:00:00 [idle_inject/1]
+root          25       2  0 08:56 ?        00:00:00 [migration/1]
+root          26       2  0 08:56 ?        00:00:00 [ksoftirqd/1]
+root          28       2  0 08:56 ?        00:00:00 [kworker/1:0H-events_highpri
+root          29       2  0 08:56 ?        00:00:00 [cpuhp/2]
+root          30       2  0 08:56 ?        00:00:00 [idle_inject/2]
+root          31       2  0 08:56 ?        00:00:00 [migration/2]
+root          32       2  0 08:56 ?        00:00:00 [ksoftirqd/2]
+root          34       2  0 08:56 ?        00:00:00 [kworker/2:0H-events_highpri
+root          35       2  0 08:56 ?        00:00:00 [cpuhp/3]
+root          36       2  0 08:56 ?        00:00:00 [idle_inject/3]
+root          37       2  0 08:56 ?        00:00:00 [migration/3]
+root          38       2  0 08:56 ?        00:00:00 [ksoftirqd/3]
+root          40       2  0 08:56 ?        00:00:00 [kworker/3:0H-events_highpri
+root          41       2  0 08:56 ?        00:00:00 [kdevtmpfs]
+root          42       2  0 08:56 ?        00:00:00 [kworker/R-inet_frag_wq]
+root          43       2  0 08:56 ?        00:00:00 [kworker/u16:1-events_unboun
+root          44       2  0 08:56 ?        00:00:00 [kauditd]
+root          45       2  0 08:56 ?        00:00:00 [khungtaskd]
+root          46       2  0 08:56 ?        00:00:00 [oom_reaper]
+root          48       2  0 08:56 ?        00:00:00 [kworker/R-writeback]
+root          49       2  0 08:56 ?        00:00:00 [kcompactd0]
+root          50       2  0 08:56 ?        00:00:00 [ksmd]
+root          51       2  0 08:56 ?        00:00:00 [khugepaged]
+root          52       2  0 08:56 ?        00:00:00 [kworker/R-kintegrityd]
+root          53       2  0 08:56 ?        00:00:00 [kworker/R-kblockd]
+root          54       2  0 08:56 ?        00:00:00 [kworker/R-blkcg_punt_bio]
+root          55       2  0 08:56 ?        00:00:00 [irq/9-acpi]
+root          56       2  0 08:56 ?        00:00:00 [kworker/1:1-events]
+root          57       2  0 08:56 ?        00:00:00 [kworker/2:1-cgroup_destroy]
+root          58       2  0 08:56 ?        00:00:00 [kworker/3:1-events]
+root          59       2  0 08:56 ?        00:00:00 [kworker/R-tpm_dev_wq]
+root          60       2  0 08:56 ?        00:00:00 [kworker/R-ata_sff]
+root          61       2  0 08:56 ?        00:00:00 [kworker/R-md]
+root          62       2  0 08:56 ?        00:00:00 [kworker/R-md_bitmap]
+root          63       2  0 08:56 ?        00:00:00 [kworker/R-edac-poller]
+root          64       2  0 08:56 ?        00:00:00 [kworker/R-devfreq_wq]
+root          65       2  0 08:56 ?        00:00:00 [watchdogd]
+root          66       2  0 08:56 ?        00:00:00 [kworker/0:1H-events_highpri
+root          67       2  0 08:56 ?        00:00:01 [kswapd0]
+root          68       2  0 08:56 ?        00:00:00 [ecryptfs-kthread]
+root          69       2  0 08:56 ?        00:00:00 [kworker/R-kthrotld]
+root          70       2  0 08:56 ?        00:00:00 [kworker/R-acpi_thermal_pm]
+root          72       2  0 08:56 ?        00:00:00 [hwrng]
+root          73       2  0 08:56 ?        00:00:00 [kworker/R-mld]
+root          74       2  0 08:56 ?        00:00:00 [kworker/2:1H-events_highpri
+root          75       2  0 08:56 ?        00:00:00 [kworker/R-ipv6_addrconf]
+root          82       2  0 08:56 ?        00:00:00 [kworker/R-kstrp]
+root          83       2  0 08:56 ?        00:00:00 [kworker/2:2-mm_percpu_wq]
+root          98       2  0 08:56 ?        00:00:00 [kworker/R-charger_manager]
+root         124       2  0 08:56 ?        00:00:00 [kworker/1:1H-events_highpri
+root         125       2  0 08:56 ?        00:00:00 [kworker/3:1H-events_highpri
+root         186       2  0 08:56 ?        00:00:00 [scsi_eh_0]
+root         187       2  0 08:56 ?        00:00:00 [kworker/R-scsi_tmf_0]
+root         188       2  0 08:56 ?        00:00:00 [scsi_eh_1]
+root         189       2  0 08:56 ?        00:00:00 [kworker/R-scsi_tmf_1]
+root         247       2  0 08:56 ?        00:00:00 [jbd2/sda2-8]
+root         248       2  0 08:56 ?        00:00:00 [kworker/R-ext4-rsv-conversi
+root         292       2  0 08:56 ?        00:00:03 [kworker/0:2-i915-unordered]
+root         298       1  0 08:56 ?        00:00:01 /usr/lib/systemd/systemd-jou
+root         326       2  0 08:56 ?        00:00:01 [kworker/3:3-events]
+root         382       1  0 08:56 ?        00:00:00 /usr/lib/systemd/systemd-ude
+root         384       2  0 08:56 ?        00:00:00 [psimon]
+root         413       2  0 08:56 ?        00:00:00 [kworker/u16:6-events_power_
+root         416       2  0 08:56 ?        00:00:00 [kworker/u16:9-ext4-rsv-conv
+root         453       2  0 08:56 ?        00:00:00 [kworker/R-asus_wireless_wor
+root         493       2  0 08:56 ?        00:00:00 [irq/130-mei_me]
+root         552       2  0 08:56 ?        00:00:00 [kworker/R-cfg80211]
+root         584       2  0 08:56 ?        00:00:00 [kworker/R-cryptd]
+root         587       2  0 08:56 ?        00:00:00 [kworker/R-led_workqueue]
+root         592       2  0 08:56 ?        00:00:02 [irq/131-iwlwifi]
+root         623       2  0 08:56 ?        00:00:00 [kworker/u17:1-hci0]
+root         636       2  0 08:56 ?        00:00:00 [kworker/R-ttm]
+root         640       2  0 08:56 ?        00:00:00 [card1-crtc0]
+root         645       2  0 08:56 ?        00:00:00 [card1-crtc1]
+root         651       2  0 08:56 ?        00:00:00 [card1-crtc2]
+systemd+     720       1  0 08:56 ?        00:00:00 /usr/lib/systemd/systemd-oom
+systemd+     726       1  0 08:56 ?        00:00:00 /usr/lib/systemd/systemd-res
+systemd+     732       1  0 08:56 ?        00:00:00 /usr/lib/systemd/systemd-tim
+avahi       1065       1  0 08:57 ?        00:00:00 avahi-daemon: running [polin
+root        1067       1  0 08:57 ?        00:00:00 /usr/libexec/bluetooth/bluet
+message+    1068       1  0 08:57 ?        00:00:01 @dbus-daemon --system --addr
+gnome-r+    1071       1  0 08:57 ?        00:00:00 /usr/libexec/gnome-remote-de
+root        1074       1  0 08:57 ?        00:00:00 /usr/libexec/iio-sensor-prox
+polkitd     1080       1  0 08:57 ?        00:00:01 /usr/lib/polkit-1/polkitd --
+root        1085       1  0 08:57 ?        00:00:00 /usr/libexec/power-profiles-
+root        1092       1  3 08:57 ?        00:00:26 /usr/lib/snapd/snapd
+root        1093       1  0 08:57 ?        00:00:00 /usr/libexec/accounts-daemon
+root        1094       1  0 08:57 ?        00:00:00 /usr/sbin/cron -f -P
+root        1095       1  0 08:57 ?        00:00:00 /usr/libexec/switcheroo-cont
+root        1097       1  0 08:57 ?        00:00:00 /usr/lib/systemd/systemd-log
+root        1098       1  0 08:57 ?        00:00:00 /usr/sbin/thermald --systemd
+root        1099       1  0 08:57 ?        00:00:00 /usr/libexec/udisks2/udisksd
+avahi       1102    1065  0 08:57 ?        00:00:00 avahi-daemon: chroot helper
+syslog      1139       1  0 08:57 ?        00:00:00 /usr/sbin/rsyslogd -n -iNONE
+root        1142       1  0 08:57 ?        00:00:00 /usr/sbin/NetworkManager --n
+root        1144       1  0 08:57 ?        00:00:00 /usr/sbin/wpa_supplicant -u 
+root        1217       1  0 08:57 ?        00:00:00 /usr/sbin/ModemManager
+root        1345       1  0 08:57 ?        00:00:00 /usr/sbin/cupsd -l
+root        1353       1  0 08:57 ?        00:00:00 /usr/bin/python3 /usr/share/
+root        1391       1  0 08:57 ?        00:00:00 /usr/sbin/gdm3
+colord      1395       1  0 08:57 ?        00:00:00 /usr/libexec/colord
+rtkit       1481       1  0 08:57 ?        00:00:00 /usr/libexec/rtkit-daemon
+root        1549       2  0 08:57 ?        00:00:00 [krfcommd]
+cups-br+    1569       1  0 08:57 ?        00:00:00 /usr/sbin/cups-browsed
+kernoops    1571       1  0 08:57 ?        00:00:00 /usr/sbin/kerneloops --test
+kernoops    1574       1  0 08:57 ?        00:00:00 /usr/sbin/kerneloops
+root        1733       1  0 08:57 ?        00:00:00 /usr/libexec/upowerd
+root        2059    1391  0 08:57 ?        00:00:00 gdm-session-worker [pam/gdm-
+polina      2069       1  0 08:57 ?        00:00:00 /usr/lib/systemd/systemd --u
+polina      2074    2069  0 08:57 ?        00:00:00 (sd-pam)
+polina      2084    2069  0 08:57 ?        00:00:00 /usr/bin/pipewire
+polina      2085    2069  0 08:57 ?        00:00:00 /usr/bin/pipewire -c filter-
+polina      2090    2069  0 08:57 ?        00:00:00 /usr/bin/wireplumber
+polina      2092    2069  0 08:57 ?        00:00:00 /usr/bin/pipewire-pulse
+polina      2100    2069  0 08:57 ?        00:00:00 /usr/bin/gnome-keyring-daemo
+polina      2105    2069  0 08:57 ?        00:00:01 /usr/bin/dbus-daemon --sessi
+polina      2145    2069  0 08:57 ?        00:00:00 /usr/libexec/xdg-document-po
+polina      2149    2069  0 08:57 ?        00:00:00 /usr/libexec/xdg-permission-
+root        2156    2145  0 08:57 ?        00:00:00 fusermount3 -o rw,nosuid,nod
+polina      2179    2059  0 08:57 tty2     00:00:00 /usr/libexec/gdm-wayland-ses
+polina      2191    2179  0 08:57 tty2     00:00:00 /usr/libexec/gnome-session-b
+polina      2261    2069  0 08:57 ?        00:00:00 /usr/libexec/gcr-ssh-agent -
+polina      2262    2069  0 08:57 ?        00:00:00 /usr/libexec/gnome-session-c
+polina      2278    2069  0 08:57 ?        00:00:00 /usr/libexec/gvfsd
+polina      2293    2069  0 08:57 ?        00:00:00 /usr/libexec/gvfsd-fuse /run
+polina      2295    2069  0 08:57 ?        00:00:00 /usr/libexec/gnome-session-b
+polina      2329    2069 12 08:57 ?        00:01:33 /usr/bin/gnome-shell
+polina      2334    2295  0 08:57 ?        00:00:00 /usr/libexec/at-spi-bus-laun
+polina      2349    2334  0 08:57 ?        00:00:00 /usr/bin/dbus-daemon --confi
+polina      2458    2069  0 08:57 ?        00:00:00 /usr/libexec/at-spi2-registr
+polina      2475    2069  0 08:57 ?        00:00:00 /usr/libexec/gnome-shell-cal
+polina      2485    2069  0 08:57 ?        00:00:00 /usr/libexec/evolution-sourc
+polina      2488    2069  0 08:57 ?        00:00:00 /usr/bin/gjs -m /usr/share/g
+polina      2506    2069  1 08:57 ?        00:00:08 /usr/bin/ibus-daemon --panel
+polina      2511    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-a11y-settin
+polina      2513    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-color
+polina      2519    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-datetime
+polina      2522    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-housekeepin
+polina      2526    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-keyboard
+polina      2530    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-media-keys
+polina      2531    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-power
+polina      2537    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-print-notif
+polina      2539    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-rfkill
+polina      2543    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-screensaver
+polina      2544    2295  0 08:57 ?        00:00:00 /usr/libexec/gsd-disk-utilit
+polina      2545    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-sharing
+polina      2547    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-smartcard
+polina      2548    2295  0 08:57 ?        00:00:01 /usr/bin/python3 /usr/bin/bl
+polina      2550    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-sound
+polina      2553    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-wacom
+polina      2579    2295  0 08:57 ?        00:00:00 /usr/libexec/evolution-data-
+polina      2636    2069  0 08:57 ?        00:00:00 /usr/libexec/gvfs-udisks2-vo
+polina      2707    2506  0 08:57 ?        00:00:00 /usr/libexec/ibus-memconf
+polina      2708    2506  3 08:57 ?        00:00:23 /usr/libexec/ibus-extension-
+polina      2713    2069  0 08:57 ?        00:00:02 /usr/libexec/ibus-portal
+polina      2721    2069  0 08:57 ?        00:00:00 /usr/libexec/gvfs-mtp-volume
+polina      2738    2069  0 08:57 ?        00:00:00 /usr/libexec/gsd-printer
+polina      2741    2069  0 08:57 ?        00:00:00 /usr/libexec/goa-daemon
+polina      2746    2069  0 08:57 ?        00:00:00 /usr/libexec/gvfs-goa-volume
+polina      2763    2069  0 08:57 ?        00:00:00 /usr/libexec/goa-identity-se
+polina      2769    2069  0 08:57 ?        00:00:00 /usr/libexec/gvfs-gphoto2-vo
+polina      2777    2069  0 08:57 ?        00:00:00 /usr/libexec/evolution-calen
+polina      2778    2069  0 08:57 ?        00:00:00 /usr/libexec/gvfs-afc-volume
+polina      2794    2506  0 08:57 ?        00:00:02 /usr/libexec/ibus-engine-sim
+polina      2808    2069  0 08:57 ?        00:00:00 /usr/libexec/evolution-addre
+polina      2813    2069  0 08:57 ?        00:00:00 /snap/snapd-desktop-integrat
+polina      2904    2813  0 08:57 ?        00:00:00 /snap/snapd-desktop-integrat
+polina      2940    2069  0 08:57 ?        00:00:00 /usr/libexec/tracker-miner-f
+polina      2954    2069  0 08:57 ?        00:00:00 /usr/bin/gjs -m /usr/share/g
+polina      2968    2069  0 08:57 ?        00:00:00 /usr/libexec/bluetooth/obexd
+polina      2972    2069  0 08:57 ?        00:00:01 /usr/bin/python3 /usr/bin/bl
+polina      3051    2069  0 08:57 ?        00:00:06 /usr/libexec/gnome-terminal-
+polina      3057    2069  0 08:57 ?        00:00:00 /usr/libexec/xdg-desktop-por
+polina      3062    2069  0 08:57 ?        00:00:00 /usr/libexec/xdg-desktop-por
+polina      3076    2069  0 08:57 ?        00:00:00 /usr/libexec/xdg-desktop-por
+polina      3117    3051  0 08:57 pts/0    00:00:00 bash
+polina      3138    2069  0 08:58 ?        00:00:00 /usr/libexec/gvfsd-metadata
+polina      3145    2295  0 08:58 ?        00:00:00 /usr/bin/update-notifier
+polina      3193    2329  6 08:58 ?        00:00:45 /opt/yandex/browser/yandex_b
+polina      3201    3193  0 08:58 ?        00:00:00 cat
+polina      3202    3193  0 08:58 ?        00:00:00 cat
+polina      3204    2069  0 08:59 ?        00:00:00 /opt/yandex/browser/chrome_c
+polina      3206    2069  0 08:59 ?        00:00:00 /opt/yandex/browser/chrome_c
+polina      3212    3193  0 08:59 ?        00:00:00 /opt/yandex/browser/yandex_b
+polina      3213    3193  0 08:59 ?        00:00:00 /opt/yandex/browser/yandex_b
+polina      3214    3213  0 08:59 ?        00:00:00 /opt/yandex/browser/yandex_b
+polina      3216    3214  0 08:59 ?        00:00:00 /opt/yandex/browser/yandex_b
+polina      3228    2329  1 08:59 ?        00:00:08 /usr/bin/Xwayland :0 -rootle
+polina      3238    2069  0 08:59 ?        00:00:00 /usr/libexec/gsd-xsettings
+polina      3266    2069  0 08:59 ?        00:00:00 /usr/libexec/ibus-x11
+polina      3268    2329  0 08:59 ?        00:00:01 /usr/libexec/mutter-x11-fram
+polina      3296    3212  2 08:59 ?        00:00:14 /opt/yandex/browser/yandex_b
+polina      3303    3193  1 08:59 ?        00:00:06 /opt/yandex/browser/yandex_b
+polina      3326    3216  0 08:59 ?        00:00:00 /opt/yandex/browser/yandex_b
+polina      3405    3216  0 08:59 ?        00:00:00 /opt/yandex/browser/yandex_b
+polina      3413    3216  0 08:59 ?        00:00:01 /opt/yandex/browser/yandex_b
+polina      3434    3216  0 08:59 ?        00:00:00 /opt/yandex/browser/yandex_b
+polina      3447    3193  0 08:59 ?        00:00:00 /opt/yandex/browser/yandex_b
+polina      3460    3216  0 08:59 ?        00:00:01 /opt/yandex/browser/yandex_b
+polina      3496    3216  0 08:59 ?        00:00:02 /opt/yandex/browser/yandex_b
+polina      3759    2069  0 08:59 ?        00:00:00 /usr/libexec/dconf-service
+polina      3767    3216  2 08:59 ?        00:00:16 /opt/yandex/browser/yandex_b
+polina      3782    3216  0 08:59 ?        00:00:00 /opt/yandex/browser/yandex_b
+polina      3794    3216  2 08:59 ?        00:00:14 /opt/yandex/browser/yandex_b
+polina      3811    3216  0 08:59 ?        00:00:00 /opt/yandex/browser/yandex_b
+polina      3934    2329  7 08:59 ?        00:00:49 /snap/telegram-desktop/6574/
+root        4404       1  0 09:00 ?        00:00:00 /usr/libexec/fwupd/fwupd
+polina      4432    3216  0 09:01 ?        00:00:01 /opt/yandex/browser/yandex_b
+root        4533       2  0 09:02 ?        00:00:01 [kworker/u17:3-i915_flip]
+root        4790       2  0 09:03 ?        00:00:00 [kworker/1:2-events]
+root        4939       2  0 09:03 ?        00:00:00 [psimon]
+polina      5023    2069  0 09:04 ?        00:00:02 /usr/bin/nautilus --gapplica
+polina      5027    2278  0 09:04 ?        00:00:00 /usr/libexec/gvfsd-trash --s
+polina      5061    2278  0 09:04 ?        00:00:00 /usr/libexec/gvfsd-recent --
+polina      5077    2069 10 09:05 ?        00:00:33 /usr/bin/gnome-text-editor /
+root        5192       2  0 09:07 ?        00:00:00 [kworker/u17:0-hci0]
+polina      5214    3216  0 09:08 ?        00:00:00 /opt/yandex/browser/yandex_b
+root        5226       2  0 09:08 ?        00:00:00 [kworker/u16:0-events_unboun
+polina      5263    3216  1 09:09 ?        00:00:00 /opt/yandex/browser/yandex_b
+root        5277       2  0 09:10 ?        00:00:00 [kworker/3:0]
+root        5278       2  0 09:10 ?        00:00:00 [kworker/2:0-events]
+polina      5279    3117 99 09:10 pts/0    00:00:00 ps -ef
+
+polina@polina-UX303UA:~$ id root
+uid=0(root) gid=0(root) группы=0(root)
+polina@polina-UX303UA:~$ 
+
+#uid минимальный у root
+# также видно что минимальный PID у процесса инициализации /sbin/init splash
+
+
+1.4
+#Kthreadd — это диспетчер потоков ядра, который управляет планированием других потоков ядра
+# Он создан при инициализации ядра и выполняет функцию запуска потоков, которые хранятся в глобальном списке kthread_create_list , он является родителем всех процессов ядра
+# поэтому чтобы найти все системные процессы, достаточно найти процессы у который PID = 2 PPID = 2, то есть либо сам процесс kthreadd, либо им порожденный
+polina@polina-UX303UA:~$ ps -f --ppid=2 --pid=2
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           2       0  0 08:56 ?        00:00:00 [kthreadd]
+root           3       2  0 08:56 ?        00:00:00 [pool_workqueue_release]
+root           4       2  0 08:56 ?        00:00:00 [kworker/R-rcu_gp]
+root           5       2  0 08:56 ?        00:00:00 [kworker/R-sync_wq]
+root           6       2  0 08:56 ?        00:00:00 [kworker/R-slub_flushwq]
+root           7       2  0 08:56 ?        00:00:00 [kworker/R-netns]
+root           9       2  0 08:56 ?        00:00:00 [kworker/0:0H-events_highpri]
+root          12       2  0 08:56 ?        00:00:00 [kworker/R-mm_percpu_wq]
+root          13       2  0 08:56 ?        00:00:00 [rcu_tasks_kthread]
+root          14       2  0 08:56 ?        00:00:00 [rcu_tasks_rude_kthread]
+root          15       2  0 08:56 ?        00:00:00 [rcu_tasks_trace_kthread]
+root          16       2  0 08:56 ?        00:00:04 [ksoftirqd/0]
+root          17       2  0 08:56 ?        00:00:02 [rcu_preempt]
+root          18       2  0 08:56 ?        00:00:00 [rcu_exp_par_gp_kthread_worker/0]
+root          19       2  0 08:56 ?        00:00:00 [rcu_exp_gp_kthread_worker]
+root          20       2  0 08:56 ?        00:00:00 [migration/0]
+root          21       2  0 08:56 ?        00:00:00 [idle_inject/0]
+root          22       2  0 08:56 ?        00:00:00 [cpuhp/0]
+root          23       2  0 08:56 ?        00:00:00 [cpuhp/1]
+root          24       2  0 08:56 ?        00:00:00 [idle_inject/1]
+root          25       2  0 08:56 ?        00:00:00 [migration/1]
+root          26       2  0 08:56 ?        00:00:00 [ksoftirqd/1]
+root          28       2  0 08:56 ?        00:00:00 [kworker/1:0H-events_highpri]
+root          29       2  0 08:56 ?        00:00:00 [cpuhp/2]
+root          30       2  0 08:56 ?        00:00:00 [idle_inject/2]
+root          31       2  0 08:56 ?        00:00:00 [migration/2]
+root          32       2  0 08:56 ?        00:00:00 [ksoftirqd/2]
+root          34       2  0 08:56 ?        00:00:00 [kworker/2:0H-events_highpri]
+root          35       2  0 08:56 ?        00:00:00 [cpuhp/3]
+root          36       2  0 08:56 ?        00:00:00 [idle_inject/3]
+root          37       2  0 08:56 ?        00:00:00 [migration/3]
+root          38       2  0 08:56 ?        00:00:00 [ksoftirqd/3]
+root          40       2  0 08:56 ?        00:00:00 [kworker/3:0H-events_highpri]
+root          41       2  0 08:56 ?        00:00:00 [kdevtmpfs]
+root          42       2  0 08:56 ?        00:00:00 [kworker/R-inet_frag_wq]
+root          43       2  0 08:56 ?        00:00:01 [kworker/u16:1-events_unbound]
+root          44       2  0 08:56 ?        00:00:00 [kauditd]
+root          45       2  0 08:56 ?        00:00:00 [khungtaskd]
+root          46       2  0 08:56 ?        00:00:00 [oom_reaper]
+root          48       2  0 08:56 ?        00:00:00 [kworker/R-writeback]
+root          49       2  0 08:56 ?        00:00:02 [kcompactd0]
+root          50       2  0 08:56 ?        00:00:00 [ksmd]
+root          51       2  0 08:56 ?        00:00:00 [khugepaged]
+root          52       2  0 08:56 ?        00:00:00 [kworker/R-kintegrityd]
+root          53       2  0 08:56 ?        00:00:00 [kworker/R-kblockd]
+root          54       2  0 08:56 ?        00:00:00 [kworker/R-blkcg_punt_bio]
+root          55       2  0 08:56 ?        00:00:00 [irq/9-acpi]
+root          56       2  0 08:56 ?        00:00:02 [kworker/1:1-events]
+root          59       2  0 08:56 ?        00:00:00 [kworker/R-tpm_dev_wq]
+root          60       2  0 08:56 ?        00:00:00 [kworker/R-ata_sff]
+root          61       2  0 08:56 ?        00:00:00 [kworker/R-md]
+root          62       2  0 08:56 ?        00:00:00 [kworker/R-md_bitmap]
+root          63       2  0 08:56 ?        00:00:00 [kworker/R-edac-poller]
+root          64       2  0 08:56 ?        00:00:00 [kworker/R-devfreq_wq]
+root          65       2  0 08:56 ?        00:00:00 [watchdogd]
+root          66       2  0 08:56 ?        00:00:00 [kworker/0:1H-kblockd]
+root          67       2  0 08:56 ?        00:00:01 [kswapd0]
+root          68       2  0 08:56 ?        00:00:00 [ecryptfs-kthread]
+root          69       2  0 08:56 ?        00:00:00 [kworker/R-kthrotld]
+root          70       2  0 08:56 ?        00:00:00 [kworker/R-acpi_thermal_pm]
+root          72       2  0 08:56 ?        00:00:00 [hwrng]
+root          73       2  0 08:56 ?        00:00:00 [kworker/R-mld]
+root          74       2  0 08:56 ?        00:00:00 [kworker/2:1H-events_highpri]
+root          75       2  0 08:56 ?        00:00:00 [kworker/R-ipv6_addrconf]
+root          82       2  0 08:56 ?        00:00:00 [kworker/R-kstrp]
+root          98       2  0 08:56 ?        00:00:00 [kworker/R-charger_manager]
+root         124       2  0 08:56 ?        00:00:00 [kworker/1:1H-events_highpri]
+root         125       2  0 08:56 ?        00:00:00 [kworker/3:1H-events_highpri]
+root         186       2  0 08:56 ?        00:00:00 [scsi_eh_0]
+root         187       2  0 08:56 ?        00:00:00 [kworker/R-scsi_tmf_0]
+root         188       2  0 08:56 ?        00:00:00 [scsi_eh_1]
+root         189       2  0 08:56 ?        00:00:00 [kworker/R-scsi_tmf_1]
+root         247       2  0 08:56 ?        00:00:00 [jbd2/sda2-8]
+root         248       2  0 08:56 ?        00:00:00 [kworker/R-ext4-rsv-conversion]
+root         292       2  0 08:56 ?        00:00:08 [kworker/0:2-i915-unordered]
+root         326       2  0 08:56 ?        00:00:03 [kworker/3:3-events]
+root         384       2  0 08:56 ?        00:00:00 [psimon]
+root         413       2  0 08:56 ?        00:00:01 [kworker/u16:6-events_unbound]
+root         453       2  0 08:56 ?        00:00:00 [kworker/R-asus_wireless_workqueue]
+root         493       2  0 08:56 ?        00:00:00 [irq/130-mei_me]
+root         552       2  0 08:56 ?        00:00:00 [kworker/R-cfg80211]
+root         584       2  0 08:56 ?        00:00:00 [kworker/R-cryptd]
+root         587       2  0 08:56 ?        00:00:00 [kworker/R-led_workqueue]
+root         592       2  0 08:56 ?        00:00:04 [irq/131-iwlwifi]
+root         636       2  0 08:56 ?        00:00:00 [kworker/R-ttm]
+root         640       2  0 08:56 ?        00:00:00 [card1-crtc0]
+root         645       2  0 08:56 ?        00:00:00 [card1-crtc1]
+root         651       2  0 08:56 ?        00:00:00 [card1-crtc2]
+root        1549       2  0 08:57 ?        00:00:00 [krfcommd]
+root        4939       2  0 09:03 ?        00:00:00 [psimon]
+root        5192       2  0 09:07 ?        00:00:02 [kworker/u17:0+i915_flip]
+root        5874       2  0 09:20 ?        00:00:01 [kworker/2:1-mm_percpu_wq]
+root        6059       2  0 09:25 ?        00:00:01 [kworker/u17:1-hci0]
+root        6109       2  0 09:25 ?        00:00:00 [kworker/3:0-events]
+root        6183       2  0 09:26 ?        00:00:00 [kworker/u16:0-events_unbound]
+root        6187       2  0 09:27 ?        00:00:00 [kworker/1:0-mm_percpu_wq]
+root        6261       2  0 09:30 ?        00:00:00 [kworker/u17:2]
+root        6273       2  0 09:30 ?        00:00:00 [kworker/2:0-events]
+root        6309       2  0 09:32 ?        00:00:00 [kworker/0:1-mm_percpu_wq]
+root        6315       2  0 09:33 ?        00:00:00 [kworker/u16:2-events_unbound]
+root        6446       2  0 09:34 ?        00:00:00 [kworker/1:2-events]
+root        6462       2  0 09:35 ?        00:00:00 [kworker/2:2-events]
+root        6547       2  0 09:36 ?        00:00:00 [kworker/3:1-events]
+
+#перечислите назначение самых важных из них
+
+# пользовательские процессы, это соответсвенно все остальные
+polina@polina-UX303UA:~$ ps -N --ppid=2 --pid=2
+    PID TTY          TIME CMD
+      1 ?        00:00:05 systemd
+    298 ?        00:00:01 systemd-journal
+    382 ?        00:00:00 systemd-udevd
+    720 ?        00:00:02 systemd-oomd
+    726 ?        00:00:00 systemd-resolve
+    732 ?        00:00:00 systemd-timesyn
+   1065 ?        00:00:00 avahi-daemon
+   1067 ?        00:00:02 bluetoothd
+   1068 ?        00:00:02 dbus-daemon
+   1071 ?        00:00:00 gnome-remote-de
+   1074 ?        00:00:02 iio-sensor-prox
+   1080 ?        00:00:01 polkitd
+   1085 ?        00:00:00 power-profiles-
+   1092 ?        00:00:27 snapd
+   1093 ?        00:00:00 accounts-daemon
+   1094 ?        00:00:00 cron
+   1095 ?        00:00:00 switcheroo-cont
+   1097 ?        00:00:00 systemd-logind
+   1098 ?        00:00:00 thermald
+   1099 ?        00:00:01 udisksd
+   1102 ?        00:00:00 avahi-daemon
+   1139 ?        00:00:00 rsyslogd
+   1142 ?        00:00:01 NetworkManager
+   1144 ?        00:00:00 wpa_supplicant
+   1217 ?        00:00:00 ModemManager
+   1345 ?        00:00:00 cupsd
+   1353 ?        00:00:00 unattended-upgr
+   1391 ?        00:00:00 gdm3
+   1395 ?        00:00:00 colord
+   1481 ?        00:00:00 rtkit-daemon
+   1569 ?        00:00:00 cups-browsed
+   1571 ?        00:00:00 kerneloops
+   1574 ?        00:00:00 kerneloops
+   1733 ?        00:00:01 upowerd
+   2059 ?        00:00:00 gdm-session-wor
+   2069 ?        00:00:00 systemd
+   2074 ?        00:00:00 (sd-pam)
+   2084 ?        00:00:00 pipewire
+   2085 ?        00:00:00 pipewire
+   2090 ?        00:00:00 wireplumber
+   2092 ?        00:00:00 pipewire-pulse
+   2100 ?        00:00:00 gnome-keyring-d
+   2105 ?        00:00:02 dbus-daemon
+   2145 ?        00:00:00 xdg-document-po
+   2149 ?        00:00:00 xdg-permission-
+   2156 ?        00:00:00 fusermount3
+   2179 tty2     00:00:00 gdm-wayland-ses
+   2191 tty2     00:00:00 gnome-session-b
+   2261 ?        00:00:00 gcr-ssh-agent
+   2262 ?        00:00:00 gnome-session-c
+   2278 ?        00:00:00 gvfsd
+   2293 ?        00:00:00 gvfsd-fuse
+   2295 ?        00:00:00 gnome-session-b
+   2329 ?        00:05:42 gnome-shell
+   2334 ?        00:00:00 at-spi-bus-laun
+   2349 ?        00:00:00 dbus-daemon
+   2458 ?        00:00:00 at-spi2-registr
+   2475 ?        00:00:00 gnome-shell-cal
+   2485 ?        00:00:00 evolution-sourc
+   2488 ?        00:00:00 gjs
+   2506 ?        00:00:27 ibus-daemon
+   2511 ?        00:00:00 gsd-a11y-settin
+   2513 ?        00:00:00 gsd-color
+   2519 ?        00:00:00 gsd-datetime
+   2522 ?        00:00:00 gsd-housekeepin
+   2526 ?        00:00:00 gsd-keyboard
+   2530 ?        00:00:00 gsd-media-keys
+   2531 ?        00:00:00 gsd-power
+   2537 ?        00:00:00 gsd-print-notif
+   2539 ?        00:00:00 gsd-rfkill
+   2543 ?        00:00:00 gsd-screensaver
+   2544 ?        00:00:00 gsd-disk-utilit
+   2545 ?        00:00:00 gsd-sharing
+   2547 ?        00:00:00 gsd-smartcard
+   2548 ?        00:00:02 blueman-applet
+   2550 ?        00:00:00 gsd-sound
+   2553 ?        00:00:00 gsd-wacom
+   2579 ?        00:00:00 evolution-alarm
+   2636 ?        00:00:00 gvfs-udisks2-vo
+   2707 ?        00:00:00 ibus-memconf
+   2708 ?        00:00:27 ibus-extension-
+   2713 ?        00:00:04 ibus-portal
+   2721 ?        00:00:00 gvfs-mtp-volume
+   2738 ?        00:00:00 gsd-printer
+   2741 ?        00:00:00 goa-daemon
+   2746 ?        00:00:00 gvfs-goa-volume
+   2763 ?        00:00:00 goa-identity-se
+   2769 ?        00:00:00 gvfs-gphoto2-vo
+   2777 ?        00:00:00 evolution-calen
+   2778 ?        00:00:00 gvfs-afc-volume
+   2794 ?        00:00:07 ibus-engine-sim
+   2808 ?        00:00:00 evolution-addre
+   2813 ?        00:00:00 snapd-desktop-i
+   2904 ?        00:00:00 snapd-desktop-i
+   2940 ?        00:00:00 tracker-miner-f
+   2954 ?        00:00:00 gjs
+   2968 ?        00:00:00 obexd
+   2972 ?        00:00:05 blueman-tray
+   3051 ?        00:00:53 gnome-terminal-
+   3057 ?        00:00:00 xdg-desktop-por
+   3062 ?        00:00:00 xdg-desktop-por
+   3076 ?        00:00:00 xdg-desktop-por
+   3117 pts/0    00:00:00 bash
+   3138 ?        00:00:00 gvfsd-metadata
+   3145 ?        00:00:00 update-notifier
+   3193 ?        00:03:14 yandex_browser
+   3201 ?        00:00:00 cat
+   3202 ?        00:00:00 cat
+   3204 ?        00:00:00 chrome_crashpad
+   3206 ?        00:00:00 chrome_crashpad
+   3212 ?        00:00:00 yandex_browser
+   3213 ?        00:00:00 yandex_browser-
+   3214 ?        00:00:00 yandex_browser
+   3216 ?        00:00:00 yandex_browser
+   3228 ?        00:00:59 Xwayland
+   3238 ?        00:00:00 gsd-xsettings
+   3266 ?        00:00:00 ibus-x11
+   3268 ?        00:00:07 mutter-x11-fram
+   3296 ?        00:02:27 yandex_browser
+   3303 ?        00:00:24 yandex_browser
+   3326 ?        00:00:01 yandex_browser
+   3405 ?        00:00:00 yandex_browser
+   3413 ?        00:00:03 yandex_browser
+   3434 ?        00:00:03 yandex_browser
+   3447 ?        00:00:00 yandex_browser
+   3460 ?        00:00:04 yandex_browser
+   3496 ?        00:00:13 yandex_browser
+   3759 ?        00:00:00 dconf-service
+   3767 ?        00:00:46 yandex_browser
+   3782 ?        00:00:00 yandex_browser
+   3794 ?        00:00:20 yandex_browser
+   3811 ?        00:00:00 yandex_browser
+   3934 ?        00:01:47 telegram-deskto
+   4404 ?        00:00:01 fwupd
+   4432 ?        00:00:01 yandex_browser
+   5023 ?        00:00:02 nautilus
+   5027 ?        00:00:00 gvfsd-trash
+   5061 ?        00:00:00 gvfsd-recent
+   5077 ?        00:01:15 gnome-text-edit
+   5352 ?        00:00:34 yandex_browser
+   5444 ?        00:00:02 yandex_browser
+   6136 ?        00:04:29 yandex_browser
+   6222 ?        00:00:01 yandex_browser
+   6347 ?        00:00:14 yandex_browser
+   6814 ?        00:00:00 yandex_browser
+   6855 ?        00:00:00 yandex_browser
+   6882 pts/0    00:00:00 ps
+
+
+1.5
+polina@polina-UX303UA:~$ pstree -p
+systemd(1)─┬─ModemManager(1217)─┬─{ModemManager}(1229)
+           │                    ├─{ModemManager}(1236)
+           │                    └─{ModemManager}(1238)
+           ├─NetworkManager(1142)─┬─{NetworkManager}(1235)
+           │                      ├─{NetworkManager}(1239)
+           │                      └─{NetworkManager}(1240)
+           ├─accounts-daemon(1093)─┬─{accounts-daemon}(1123)
+           │                       ├─{accounts-daemon}(1124)
+           │                       └─{accounts-daemon}(1136)
+           ├─avahi-daemon(1065)───avahi-daemon(1102)
+           ├─bluetoothd(1067)
+           ├─colord(1395)─┬─{colord}(1413)
+           │              ├─{colord}(1414)
+           │              └─{colord}(1417)
+           ├─cron(1094)
+           ├─cups-browsed(1569)─┬─{cups-browsed}(1582)
+           │                    ├─{cups-browsed}(1583)
+           │                    └─{cups-browsed}(1584)
+           ├─cupsd(1345)
+           ├─dbus-daemon(1068)
+           ├─fwupd(4404)─┬─{fwupd}(4405)
+           │             ├─{fwupd}(4406)
+           │             ├─{fwupd}(4407)
+           │             ├─{fwupd}(4408)
+           │             └─{fwupd}(4410)
+           ├─gdm3(1391)─┬─gdm-session-wor(2059)─┬─gdm-wayland-ses(2179)─┬─gnome-session-b(2191)─┬─{gnome-session-b}(2258)
+           │            │                       │                       │                       ├─{gnome-session-b}(2259)
+           │            │                       │                       │                       └─{gnome-session-b}(2260)
+           │            │                       │                       ├─{gdm-wayland-ses}(2186)
+           │            │                       │                       ├─{gdm-wayland-ses}(2187)
+           │            │                       │                       └─{gdm-wayland-ses}(2190)
+           │            │                       ├─{gdm-session-wor}(2060)
+           │            │                       ├─{gdm-session-wor}(2061)
+           │            │                       └─{gdm-session-wor}(2062)
+           │            ├─{gdm3}(1398)
+           │            ├─{gdm3}(1399)
+           │            └─{gdm3}(1400)
+           ├─gnome-remote-de(1071)─┬─{gnome-remote-de}(1228)
+           │                       ├─{gnome-remote-de}(1230)
+           │                       └─{gnome-remote-de}(1231)
+           ├─iio-sensor-prox(1074)─┬─{iio-sensor-prox}(1106)
+           │                       ├─{iio-sensor-prox}(1107)
+           │                       └─{iio-sensor-prox}(1133)
+           ├─kerneloops(1571)
+           ├─kerneloops(1574)
+           ├─polkitd(1080)─┬─{polkitd}(1183)
+           │               ├─{polkitd}(1188)
+           │               └─{polkitd}(1189)
+           ├─power-profiles-(1085)─┬─{power-profiles-}(1108)
+           │                       ├─{power-profiles-}(1109)
+           │                       └─{power-profiles-}(1131)
+           ├─rsyslogd(1139)─┬─{rsyslogd}(1203)
+           │                ├─{rsyslogd}(1204)
+           │                └─{rsyslogd}(1205)
+           ├─rtkit-daemon(1481)─┬─{rtkit-daemon}(1494)
+           │                    └─{rtkit-daemon}(1495)
+           ├─snapd(1092)─┬─{snapd}(1271)
+           │             ├─{snapd}(1278)
+           │             ├─{snapd}(1279)
+           │             ├─{snapd}(1280)
+           │             ├─{snapd}(1281)
+           │             ├─{snapd}(1341)
+           │             ├─{snapd}(1342)
+           │             ├─{snapd}(1354)
+           │             ├─{snapd}(1404)
+           │             ├─{snapd}(2925)
+           │             └─{snapd}(4536)
+           ├─switcheroo-cont(1095)─┬─{switcheroo-cont}(1111)
+           │                       ├─{switcheroo-cont}(1112)
+           │                       └─{switcheroo-cont}(1132)
+           ├─systemd(2069)─┬─(sd-pam)(2074)
+           │               ├─at-spi2-registr(2458)─┬─{at-spi2-registr}(2460)
+           │               │                       ├─{at-spi2-registr}(2461)
+           │               │                       └─{at-spi2-registr}(2462)
+           │               ├─blueman-tray(2972)─┬─{blueman-tray}(2978)
+           │               │                    ├─{blueman-tray}(2979)
+           │               │                    ├─{blueman-tray}(2981)
+           │               │                    └─{blueman-tray}(2982)
+           │               ├─chrome_crashpad(3204)─┬─{chrome_crashpad}(3208)
+           │               │                       └─{chrome_crashpad}(3209)
+           │               ├─chrome_crashpad(3206)───{chrome_crashpad}(3207)
+           │               ├─dbus-daemon(2105)
+           │               ├─dconf-service(3759)─┬─{dconf-service}(3760)
+           │               │                     ├─{dconf-service}(3761)
+           │               │                     └─{dconf-service}(3762)
+           │               ├─evolution-addre(2808)─┬─{evolution-addre}(2811)
+           │               │                       ├─{evolution-addre}(2812)
+           │               │                       ├─{evolution-addre}(2814)
+           │               │                       ├─{evolution-addre}(2821)
+           │               │                       ├─{evolution-addre}(2822)
+           │               │                       ├─{evolution-addre}(2848)
+           │               │                       └─{evolution-addre}(7848)
+           │               ├─evolution-calen(2777)─┬─{evolution-calen}(2786)
+           │               │                       ├─{evolution-calen}(2787)
+           │               │                       ├─{evolution-calen}(2788)
+           │               │                       ├─{evolution-calen}(2798)
+           │               │                       ├─{evolution-calen}(2799)
+           │               │                       ├─{evolution-calen}(2804)
+           │               │                       ├─{evolution-calen}(2806)
+           │               │                       ├─{evolution-calen}(2807)
+           │               │                       ├─{evolution-calen}(2918)
+           │               │                       └─{evolution-calen}(7850)
+           │               ├─evolution-sourc(2485)─┬─{evolution-sourc}(2494)
+           │               │                       ├─{evolution-sourc}(2495)
+           │               │                       ├─{evolution-sourc}(2496)
+           │               │                       └─{evolution-sourc}(2505)
+           │               ├─gcr-ssh-agent(2261)─┬─{gcr-ssh-agent}(2267)
+           │               │                     └─{gcr-ssh-agent}(2268)
+           │               ├─gjs(2488)─┬─{gjs}(2497)
+           │               │           ├─{gjs}(2498)
+           │               │           ├─{gjs}(2499)
+           │               │           ├─{gjs}(2507)
+           │               │           ├─{gjs}(2508)
+           │               │           ├─{gjs}(2509)
+           │               │           └─{gjs}(2510)
+           │               ├─gjs(2954)─┬─{gjs}(2959)
+           │               │           ├─{gjs}(2960)
+           │               │           ├─{gjs}(2961)
+           │               │           ├─{gjs}(2962)
+           │               │           ├─{gjs}(2963)
+           │               │           ├─{gjs}(2964)
+           │               │           └─{gjs}(2965)
+           │               ├─gnome-keyring-d(2100)─┬─{gnome-keyring-d}(2113)
+           │               │                       ├─{gnome-keyring-d}(2114)
+           │               │                       ├─{gnome-keyring-d}(2115)
+           │               │                       └─{gnome-keyring-d}(2123)
+           │               ├─gnome-session-b(2295)─┬─at-spi-bus-laun(2334)─┬─dbus-daemon(2349)
+           │               │                       │                       ├─{at-spi-bus-laun}(2343)
+           │               │                       │                       ├─{at-spi-bus-laun}(2344)
+           │               │                       │                       ├─{at-spi-bus-laun}(2345)
+           │               │                       │                       └─{at-spi-bus-laun}(2346)
+           │               │                       ├─blueman-applet(2548)─┬─{blueman-applet}(2732)
+           │               │                       │                      ├─{blueman-applet}(2733)
+           │               │                       │                      ├─{blueman-applet}(2735)
+           │               │                       │                      └─{blueman-applet}(2736)
+           │               │                       ├─evolution-alarm(2579)─┬─{evolution-alarm}(2724)
+           │               │                       │                       ├─{evolution-alarm}(2726)
+           │               │                       │                       ├─{evolution-alarm}(2728)
+           │               │                       │                       ├─{evolution-alarm}(2731)
+           │               │                       │                       ├─{evolution-alarm}(2897)
+           │               │                       │                       ├─{evolution-alarm}(2903)
+           │               │                       │                       └─{evolution-alarm}(2910)
+           │               │                       ├─gsd-disk-utilit(2544)─┬─{gsd-disk-utilit}(2573)
+           │               │                       │                       ├─{gsd-disk-utilit}(2578)
+           │               │                       │                       └─{gsd-disk-utilit}(2593)
+           │               │                       ├─update-notifier(3145)─┬─{update-notifier}(3155)
+           │               │                       │                       ├─{update-notifier}(3156)
+           │               │                       │                       ├─{update-notifier}(3158)
+           │               │                       │                       ├─{update-notifier}(3159)
+           │               │                       │                       └─{update-notifier}(3179)
+           │               │                       ├─{gnome-session-b}(2304)
+           │               │                       ├─{gnome-session-b}(2305)
+           │               │                       ├─{gnome-session-b}(2307)
+           │               │                       └─{gnome-session-b}(2309)
+           │               ├─gnome-session-c(2262)───{gnome-session-c}(2269)
+           │               ├─gnome-shell(2329)─┬─Xwayland(3228)─┬─{Xwayland}(3231)
+           │               │                   │                ├─{Xwayland}(3232)
+           │               │                   │                ├─{Xwayland}(3233)
+           │               │                   │                └─{Xwayland}(3234)
+           │               │                   ├─mutter-x11-fram(3268)─┬─{mutter-x11-fram}(3273)
+           │               │                   │                       ├─{mutter-x11-fram}(3278)
+           │               │                   │                       ├─{mutter-x11-fram}(3279)
+           │               │                   │                       ├─{mutter-x11-fram}(3280)
+           │               │                   │                       ├─{mutter-x11-fram}(3281)
+           │               │                   │                       ├─{mutter-x11-fram}(3282)
+           │               │                   │                       ├─{mutter-x11-fram}(3283)
+           │               │                   │                       ├─{mutter-x11-fram}(3284)
+           │               │                   │                       └─{mutter-x11-fram}(3285)
+           │               │                   ├─telegram-deskto(3934)─┬─{telegram-deskto}(4035)
+           │               │                   │                       ├─{telegram-deskto}(4036)
+           │               │                   │                       ├─{telegram-deskto}(4037)
+           │               │                   │                       ├─{telegram-deskto}(4038)
+           │               │                   │                       ├─{telegram-deskto}(4039)
+           │               │                   │                       ├─{telegram-deskto}(4040)
+           │               │                   │                       ├─{telegram-deskto}(4041)
+           │               │                   │                       ├─{telegram-deskto}(4043)
+           │               │                   │                       ├─{telegram-deskto}(4055)
+           │               │                   │                       ├─{telegram-deskto}(4057)
+           │               │                   │                       ├─{telegram-deskto}(4092)
+           │               │                   │                       ├─{telegram-deskto}(4093)
+           │               │                   │                       ├─{telegram-deskto}(4095)
+           │               │                   │                       ├─{telegram-deskto}(4102)
+           │               │                   │                       ├─{telegram-deskto}(4103)
+           │               │                   │                       ├─{telegram-deskto}(4110)
+           │               │                   │                       ├─{telegram-deskto}(4123)
+           │               │                   │                       ├─{telegram-deskto}(4126)
+           │               │                   │                       ├─{telegram-deskto}(4127)
+           │               │                   │                       ├─{telegram-deskto}(4128)
+           │               │                   │                       ├─{telegram-deskto}(4129)
+           │               │                   │                       ├─{telegram-deskto}(4130)
+           │               │                   │                       ├─{telegram-deskto}(4203)
+           │               │                   │                       ├─{telegram-deskto}(4210)
+           │               │                   │                       ├─{telegram-deskto}(4238)
+           │               │                   │                       ├─{telegram-deskto}(4239)
+           │               │                   │                       ├─{telegram-deskto}(4240)
+           │               │                   │                       ├─{telegram-deskto}(4241)
+           │               │                   │                       ├─{telegram-deskto}(4242)
+           │               │                   │                       ├─{telegram-deskto}(4243)
+           │               │                   │                       ├─{telegram-deskto}(4246)
+           │               │                   │                       ├─{telegram-deskto}(4249)
+           │               │                   │                       ├─{telegram-deskto}(4258)
+           │               │                   │                       ├─{telegram-deskto}(7732)
+           │               │                   │                       ├─{telegram-deskto}(7733)
+           │               │                   │                       ├─{telegram-deskto}(7734)
+           │               │                   │                       ├─{telegram-deskto}(7735)
+           │               │                   │                       ├─{telegram-deskto}(7751)
+           │               │                   │                       ├─{telegram-deskto}(7761)
+           │               │                   │                       ├─{telegram-deskto}(7762)
+           │               │                   │                       └─{telegram-deskto}(7764)
+           │               │                   ├─yandex_browser(3193)─┬─cat(3201)
+           │               │                   │                      ├─cat(3202)
+           │               │                   │                      ├─yandex_browser(3212)───yandex_browser(3296)─┬─{yandex_browser}(3305)
+           │               │                   │                      │                                             ├─{yandex_browser}(3306)
+           │               │                   │                      │                                             ├─{yandex_browser}(3307)
+           │               │                   │                      │                                             ├─{yandex_browser}(3308)
+           │               │                   │                      │                                             ├─{yandex_browser}(3316)
+           │               │                   │                      │                                             ├─{yandex_browser}(3318)
+           │               │                   │                      │                                             ├─{yandex_browser}(3319)
+           │               │                   │                      │                                             ├─{yandex_browser}(3320)
+           │               │                   │                      │                                             ├─{yandex_browser}(3321)
+           │               │                   │                      │                                             ├─{yandex_browser}(3322)
+           │               │                   │                      │                                             ├─{yandex_browser}(3323)
+           │               │                   │                      │                                             ├─{yandex_browser}(3324)
+           │               │                   │                      │                                             ├─{yandex_browser}(3325)
+           │               │                   │                      │                                             ├─{yandex_browser}(3433)
+           │               │                   │                      │                                             ├─{yandex_browser}(3489)
+           │               │                   │                      │                                             ├─{yandex_browser}(3490)
+           │               │                   │                      │                                             ├─{yandex_browser}(3491)
+           │               │                   │                      │                                             ├─{yandex_browser}(3492)
+           │               │                   │                      │                                             ├─{yandex_browser}(3493)
+           │               │                   │                      │                                             ├─{yandex_browser}(3494)
+           │               │                   │                      │                                             ├─{yandex_browser}(3495)
+           │               │                   │                      │                                             ├─{yandex_browser}(3809)
+           │               │                   │                      │                                             └─{yandex_browser}(5246)
+           │               │                   │                      ├─yandex_browser(3303)─┬─{yandex_browser}(3309)
+           │               │                   │                      │                      ├─{yandex_browser}(3310)
+           │               │                   │                      │                      ├─{yandex_browser}(3311)
+           │               │                   │                      │                      ├─{yandex_browser}(3312)
+           │               │                   │                      │                      ├─{yandex_browser}(3313)
+           │               │                   │                      │                      ├─{yandex_browser}(3314)
+           │               │                   │                      │                      ├─{yandex_browser}(3315)
+           │               │                   │                      │                      └─{yandex_browser}(5257)
+           │               │                   │                      ├─yandex_browser(3447)─┬─{yandex_browser}(3449)
+           │               │                   │                      │                      ├─{yandex_browser}(3450)
+           │               │                   │                      │                      ├─{yandex_browser}(3451)
+           │               │                   │                      │                      ├─{yandex_browser}(3452)
+           │               │                   │                      │                      ├─{yandex_browser}(3453)
+           │               │                   │                      │                      ├─{yandex_browser}(3454)
+           │               │                   │                      │                      └─{yandex_browser}(5255)
+           │               │                   │                      ├─yandex_browser-(3213)───yandex_browser(3214)───yandex_browser(3216)─┬─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     ├─yandex_br+
+           │               │                   │                      │                                                                     └─yandex_br+
+           │               │                   │                      ├─{yandex_browser}(3210)
+           │               │                   │                      ├─{yandex_browser}(3217)
+           │               │                   │                      ├─{yandex_browser}(3218)
+           │               │                   │                      ├─{yandex_browser}(3219)
+           │               │                   │                      ├─{yandex_browser}(3220)
+           │               │                   │                      ├─{yandex_browser}(3221)
+           │               │                   │                      ├─{yandex_browser}(3222)
+           │               │                   │                      ├─{yandex_browser}(3223)
+           │               │                   │                      ├─{yandex_browser}(3224)
+           │               │                   │                      ├─{yandex_browser}(3225)
+           │               │                   │                      ├─{yandex_browser}(3226)
+           │               │                   │                      ├─{yandex_browser}(3227)
+           │               │                   │                      ├─{yandex_browser}(3274)
+           │               │                   │                      ├─{yandex_browser}(3275)
+           │               │                   │                      ├─{yandex_browser}(3276)
+           │               │                   │                      ├─{yandex_browser}(3287)
+           │               │                   │                      ├─{yandex_browser}(3288)
+           │               │                   │                      ├─{yandex_browser}(3289)
+           │               │                   │                      ├─{yandex_browser}(3290)
+           │               │                   │                      ├─{yandex_browser}(3291)
+           │               │                   │                      ├─{yandex_browser}(3292)
+           │               │                   │                      ├─{yandex_browser}(3293)
+           │               │                   │                      ├─{yandex_browser}(3295)
+           │               │                   │                      ├─{yandex_browser}(3297)
+           │               │                   │                      ├─{yandex_browser}(3298)
+           │               │                   │                      ├─{yandex_browser}(3300)
+           │               │                   │                      ├─{yandex_browser}(3334)
+           │               │                   │                      ├─{yandex_browser}(3335)
+           │               │                   │                      ├─{yandex_browser}(3336)
+           │               │                   │                      ├─{yandex_browser}(3337)
+           │               │                   │                      ├─{yandex_browser}(3338)
+           │               │                   │                      ├─{yandex_browser}(3339)
+           │               │                   │                      ├─{yandex_browser}(3340)
+           │               │                   │                      ├─{yandex_browser}(3341)
+           │               │                   │                      ├─{yandex_browser}(3432)
+           │               │                   │                      ├─{yandex_browser}(3781)
+           │               │                   │                      ├─{yandex_browser}(3872)
+           │               │                   │                      └─{yandex_browser}(3873)
+           │               │                   ├─{gnome-shell}(2351)
+           │               │                   ├─{gnome-shell}(2352)
+           │               │                   ├─{gnome-shell}(2354)
+           │               │                   ├─{gnome-shell}(2355)
+           │               │                   ├─{gnome-shell}(2356)
+           │               │                   ├─{gnome-shell}(2357)
+           │               │                   ├─{gnome-shell}(2358)
+           │               │                   ├─{gnome-shell}(2359)
+           │               │                   ├─{gnome-shell}(2361)
+           │               │                   ├─{gnome-shell}(2370)
+           │               │                   ├─{gnome-shell}(2371)
+           │               │                   ├─{gnome-shell}(2381)
+           │               │                   ├─{gnome-shell}(2382)
+           │               │                   ├─{gnome-shell}(2386)
+           │               │                   ├─{gnome-shell}(2387)
+           │               │                   ├─{gnome-shell}(2389)
+           │               │                   ├─{gnome-shell}(2454)
+           │               │                   ├─{gnome-shell}(2890)
+           │               │                   └─{gnome-shell}(7827)
+           │               ├─gnome-shell-cal(2475)─┬─{gnome-shell-cal}(2479)
+           │               │                       ├─{gnome-shell-cal}(2480)
+           │               │                       ├─{gnome-shell-cal}(2482)
+           │               │                       ├─{gnome-shell-cal}(2483)
+           │               │                       ├─{gnome-shell-cal}(2484)
+           │               │                       └─{gnome-shell-cal}(2776)
+           │               ├─gnome-terminal-(3051)─┬─bash(3117)───pstree(7900)
+           │               │                       ├─{gnome-terminal-}(3052)
+           │               │                       ├─{gnome-terminal-}(3053)
+           │               │                       ├─{gnome-terminal-}(3055)
+           │               │                       ├─{gnome-terminal-}(3056)
+           │               │                       ├─{gnome-terminal-}(3116)
+           │               │                       └─{gnome-terminal-}(5301)
+           │               ├─gnome-text-edit(5077)─┬─{gnome-text-edit}(5079)
+           │               │                       ├─{gnome-text-edit}(5080)
+           │               │                       ├─{gnome-text-edit}(5081)
+           │               │                       ├─{gnome-text-edit}(5082)
+           │               │                       ├─{gnome-text-edit}(5083)
+           │               │                       ├─{gnome-text-edit}(5086)
+           │               │                       ├─{gnome-text-edit}(5096)
+           │               │                       ├─{gnome-text-edit}(5097)
+           │               │                       ├─{gnome-text-edit}(5098)
+           │               │                       ├─{gnome-text-edit}(5099)
+           │               │                       ├─{gnome-text-edit}(5100)
+           │               │                       ├─{gnome-text-edit}(5101)
+           │               │                       ├─{gnome-text-edit}(5184)
+           │               │                       └─{gnome-text-edit}(5185)
+           │               ├─goa-daemon(2741)─┬─{goa-daemon}(2756)
+           │               │                  ├─{goa-daemon}(2757)
+           │               │                  ├─{goa-daemon}(2759)
+           │               │                  └─{goa-daemon}(2760)
+           │               ├─goa-identity-se(2763)─┬─{goa-identity-se}(2765)
+           │               │                       ├─{goa-identity-se}(2766)
+           │               │                       └─{goa-identity-se}(2768)
+           │               ├─gsd-a11y-settin(2511)─┬─{gsd-a11y-settin}(2534)
+           │               │                       ├─{gsd-a11y-settin}(2535)
+           │               │                       ├─{gsd-a11y-settin}(2542)
+           │               │                       └─{gsd-a11y-settin}(2603)
+           │               ├─gsd-color(2513)─┬─{gsd-color}(2606)
+           │               │                 ├─{gsd-color}(2613)
+           │               │                 ├─{gsd-color}(2621)
+           │               │                 └─{gsd-color}(2639)
+           │               ├─gsd-datetime(2519)─┬─{gsd-datetime}(2591)
+           │               │                    ├─{gsd-datetime}(2592)
+           │               │                    ├─{gsd-datetime}(2597)
+           │               │                    └─{gsd-datetime}(2627)
+           │               ├─gsd-housekeepin(2522)─┬─{gsd-housekeepin}(2563)
+           │               │                       ├─{gsd-housekeepin}(2566)
+           │               │                       ├─{gsd-housekeepin}(2589)
+           │               │                       └─{gsd-housekeepin}(2600)
+           │               ├─gsd-keyboard(2526)─┬─{gsd-keyboard}(2598)
+           │               │                    ├─{gsd-keyboard}(2599)
+           │               │                    ├─{gsd-keyboard}(2607)
+           │               │                    └─{gsd-keyboard}(2631)
+           │               ├─gsd-media-keys(2530)─┬─{gsd-media-keys}(2666)
+           │               │                      ├─{gsd-media-keys}(2667)
+           │               │                      ├─{gsd-media-keys}(2674)
+           │               │                      └─{gsd-media-keys}(2675)
+           │               ├─gsd-power(2531)─┬─{gsd-power}(2679)
+           │               │                 ├─{gsd-power}(2682)
+           │               │                 ├─{gsd-power}(2686)
+           │               │                 ├─{gsd-power}(2689)
+           │               │                 └─{gsd-power}(7064)
+           │               ├─gsd-print-notif(2537)─┬─{gsd-print-notif}(2623)
+           │               │                       ├─{gsd-print-notif}(2625)
+           │               │                       └─{gsd-print-notif}(2643)
+           │               ├─gsd-printer(2738)─┬─{gsd-printer}(2747)
+           │               │                   ├─{gsd-printer}(2748)
+           │               │                   └─{gsd-printer}(2749)
+           │               ├─gsd-rfkill(2539)─┬─{gsd-rfkill}(2601)
+           │               │                  ├─{gsd-rfkill}(2605)
+           │               │                  └─{gsd-rfkill}(2632)
+           │               ├─gsd-screensaver(2543)─┬─{gsd-screensaver}(2614)
+           │               │                       ├─{gsd-screensaver}(2615)
+           │               │                       └─{gsd-screensaver}(2640)
+           │               ├─gsd-sharing(2545)─┬─{gsd-sharing}(2618)
+           │               │                   ├─{gsd-sharing}(2619)
+           │               │                   ├─{gsd-sharing}(2624)
+           │               │                   └─{gsd-sharing}(2644)
+           │               ├─gsd-smartcard(2547)─┬─{gsd-smartcard}(2609)
+           │               │                     ├─{gsd-smartcard}(2610)
+           │               │                     ├─{gsd-smartcard}(2642)
+           │               │                     └─{gsd-smartcard}(2665)
+           │               ├─gsd-sound(2550)─┬─{gsd-sound}(2628)
+           │               │                 ├─{gsd-sound}(2629)
+           │               │                 ├─{gsd-sound}(2649)
+           │               │                 └─{gsd-sound}(2668)
+           │               ├─gsd-wacom(2553)─┬─{gsd-wacom}(2645)
+           │               │                 ├─{gsd-wacom}(2646)
+           │               │                 ├─{gsd-wacom}(2648)
+           │               │                 └─{gsd-wacom}(2661)
+           │               ├─gsd-xsettings(3238)─┬─{gsd-xsettings}(3240)
+           │               │                     ├─{gsd-xsettings}(3241)
+           │               │                     ├─{gsd-xsettings}(3242)
+           │               │                     ├─{gsd-xsettings}(3243)
+           │               │                     ├─{gsd-xsettings}(3244)
+           │               │                     └─{gsd-xsettings}(3246)
+           │               ├─gvfs-afc-volume(2778)─┬─{gvfs-afc-volume}(2779)
+           │               │                       ├─{gvfs-afc-volume}(2780)
+           │               │                       ├─{gvfs-afc-volume}(2781)
+           │               │                       └─{gvfs-afc-volume}(2783)
+           │               ├─gvfs-goa-volume(2746)─┬─{gvfs-goa-volume}(2752)
+           │               │                       ├─{gvfs-goa-volume}(2753)
+           │               │                       └─{gvfs-goa-volume}(2754)
+           │               ├─gvfs-gphoto2-vo(2769)─┬─{gvfs-gphoto2-vo}(2772)
+           │               │                       ├─{gvfs-gphoto2-vo}(2773)
+           │               │                       └─{gvfs-gphoto2-vo}(2775)
+           │               ├─gvfs-mtp-volume(2721)─┬─{gvfs-mtp-volume}(2742)
+           │               │                       ├─{gvfs-mtp-volume}(2743)
+           │               │                       └─{gvfs-mtp-volume}(2745)
+           │               ├─gvfs-udisks2-vo(2636)─┬─{gvfs-udisks2-vo}(2656)
+           │               │                       ├─{gvfs-udisks2-vo}(2657)
+           │               │                       ├─{gvfs-udisks2-vo}(2658)
+           │               │                       └─{gvfs-udisks2-vo}(2701)
+           │               ├─gvfsd(2278)─┬─gvfsd-recent(5061)─┬─{gvfsd-recent}(5062)
+           │               │             │                    ├─{gvfsd-recent}(5063)
+           │               │             │                    └─{gvfsd-recent}(5064)
+           │               │             ├─gvfsd-trash(5027)─┬─{gvfsd-trash}(5028)
+           │               │             │                   ├─{gvfsd-trash}(5029)
+           │               │             │                   ├─{gvfsd-trash}(5030)
+           │               │             │                   └─{gvfsd-trash}(5037)
+           │               │             ├─{gvfsd}(2288)
+           │               │             ├─{gvfsd}(2289)
+           │               │             └─{gvfsd}(2290)
+           │               ├─gvfsd-fuse(2293)─┬─{gvfsd-fuse}(2297)
+           │               │                  ├─{gvfsd-fuse}(2298)
+           │               │                  ├─{gvfsd-fuse}(2299)
+           │               │                  ├─{gvfsd-fuse}(2300)
+           │               │                  ├─{gvfsd-fuse}(2301)
+           │               │                  └─{gvfsd-fuse}(2303)
+           │               ├─gvfsd-metadata(3138)─┬─{gvfsd-metadata}(3140)
+           │               │                      ├─{gvfsd-metadata}(3141)
+           │               │                      └─{gvfsd-metadata}(3143)
+           │               ├─ibus-daemon(2506)─┬─ibus-engine-sim(2794)─┬─{ibus-engine-sim}(2795)
+           │               │                   │                       ├─{ibus-engine-sim}(2796)
+           │               │                   │                       └─{ibus-engine-sim}(2797)
+           │               │                   ├─ibus-extension-(2708)─┬─{ibus-extension-}(2722)
+           │               │                   │                       ├─{ibus-extension-}(2723)
+           │               │                   │                       ├─{ibus-extension-}(2729)
+           │               │                   │                       └─{ibus-extension-}(2730)
+           │               │                   ├─ibus-memconf(2707)─┬─{ibus-memconf}(2709)
+           │               │                   │                    ├─{ibus-memconf}(2710)
+           │               │                   │                    └─{ibus-memconf}(2711)
+           │               │                   ├─{ibus-daemon}(2703)
+           │               │                   ├─{ibus-daemon}(2704)
+           │               │                   └─{ibus-daemon}(2705)
+           │               ├─ibus-portal(2713)─┬─{ibus-portal}(2716)
+           │               │                   ├─{ibus-portal}(2717)
+           │               │                   ├─{ibus-portal}(2718)
+           │               │                   └─{ibus-portal}(7807)
+           │               ├─ibus-x11(3266)─┬─{ibus-x11}(3269)
+           │               │                ├─{ibus-x11}(3270)
+           │               │                └─{ibus-x11}(3271)
+           │               ├─nautilus(5023)─┬─{nautilus}(5024)
+           │               │                ├─{nautilus}(5025)
+           │               │                ├─{nautilus}(5026)
+           │               │                ├─{nautilus}(5039)
+           │               │                ├─{nautilus}(5046)
+           │               │                ├─{nautilus}(5047)
+           │               │                ├─{nautilus}(5053)
+           │               │                ├─{nautilus}(5054)
+           │               │                ├─{nautilus}(5055)
+           │               │                ├─{nautilus}(5056)
+           │               │                ├─{nautilus}(5057)
+           │               │                └─{nautilus}(5058)
+           │               ├─obexd(2968)
+           │               ├─pipewire(2084)─┬─{pipewire}(2107)
+           │               │                └─{pipewire}(2121)
+           │               ├─pipewire(2085)─┬─{pipewire}(2108)
+           │               │                └─{pipewire}(2112)
+           │               ├─pipewire-pulse(2092)─┬─{pipewire-pulse}(2124)
+           │               │                      └─{pipewire-pulse}(2130)
+           │               ├─snapd-desktop-i(2813)───snapd-desktop-i(2904)─┬─{snapd-desktop-i}(2936)
+           │               │                                               ├─{snapd-desktop-i}(2937)
+           │               │                                               ├─{snapd-desktop-i}(2938)
+           │               │                                               └─{snapd-desktop-i}(2939)
+           │               ├─tracker-miner-f(2940)─┬─{tracker-miner-f}(2945)
+           │               │                       ├─{tracker-miner-f}(2946)
+           │               │                       ├─{tracker-miner-f}(2947)
+           │               │                       ├─{tracker-miner-f}(2948)
+           │               │                       ├─{tracker-miner-f}(2955)
+           │               │                       ├─{tracker-miner-f}(3024)
+           │               │                       └─{tracker-miner-f}(3025)
+           │               ├─wireplumber(2090)─┬─{wireplumber}(2109)
+           │               │                   ├─{wireplumber}(2110)
+           │               │                   ├─{wireplumber}(2111)
+           │               │                   ├─{wireplumber}(2126)
+           │               │                   └─{wireplumber}(2129)
+           │               ├─xdg-desktop-por(3057)─┬─{xdg-desktop-por}(3058)
+           │               │                       ├─{xdg-desktop-por}(3059)
+           │               │                       ├─{xdg-desktop-por}(3060)
+           │               │                       ├─{xdg-desktop-por}(3075)
+           │               │                       ├─{xdg-desktop-por}(3082)
+           │               │                       ├─{xdg-desktop-por}(3083)
+           │               │                       └─{xdg-desktop-por}(7728)
+           │               ├─xdg-desktop-por(3062)─┬─{xdg-desktop-por}(3063)
+           │               │                       ├─{xdg-desktop-por}(3064)
+           │               │                       ├─{xdg-desktop-por}(3065)
+           │               │                       ├─{xdg-desktop-por}(3066)
+           │               │                       └─{xdg-desktop-por}(3067)
+           │               ├─xdg-desktop-por(3076)─┬─{xdg-desktop-por}(3077)
+           │               │                       ├─{xdg-desktop-por}(3078)
+           │               │                       ├─{xdg-desktop-por}(3080)
+           │               │                       └─{xdg-desktop-por}(3081)
+           │               ├─xdg-document-po(2145)─┬─fusermount3(2156)
+           │               │                       ├─{xdg-document-po}(2146)
+           │               │                       ├─{xdg-document-po}(2147)
+           │               │                       ├─{xdg-document-po}(2148)
+           │               │                       ├─{xdg-document-po}(2155)
+           │               │                       ├─{xdg-document-po}(2157)
+           │               │                       └─{xdg-document-po}(2158)
+           │               └─xdg-permission-(2149)─┬─{xdg-permission-}(2150)
+           │                                       ├─{xdg-permission-}(2151)
+           │                                       └─{xdg-permission-}(2153)
+           ├─systemd-journal(298)
+           ├─systemd-logind(1097)
+           ├─systemd-oomd(720)
+           ├─systemd-resolve(726)
+           ├─systemd-timesyn(732)───{systemd-timesyn}(775)
+           ├─systemd-udevd(382)
+           ├─thermald(1098)─┬─{thermald}(1190)
+           │                ├─{thermald}(1191)
+           │                ├─{thermald}(1195)
+           │                └─{thermald}(1218)
+           ├─udisksd(1099)─┬─{udisksd}(1129)
+           │               ├─{udisksd}(1134)
+           │               ├─{udisksd}(1143)
+           │               ├─{udisksd}(1227)
+           │               └─{udisksd}(1242)
+           ├─unattended-upgr(1353)───{unattended-upgr}(1403)
+           ├─upowerd(1733)─┬─{upowerd}(1850)
+           │               ├─{upowerd}(1851)
+           │               └─{upowerd}(1855)
+           └─wpa_supplicant(1144)
+
+polina@polina-UX303UA:~$ sudo ls -l /proc/2069
+итого 0
+-r--r--r--  1 polina polina   0 Mar 13 11:26 arch_status
+dr-xr-xr-x  2 polina polina   0 Mar 13 08:57 attr
+-rw-r--r--  1 polina polina   0 Mar 13 11:26 autogroup
+-r--------  1 polina polina   0 Mar 13 11:26 auxv
+-r--r--r--  1 polina polina   0 Mar 13 08:57 cgroup
+--w-------  1 polina polina   0 Mar 13 11:26 clear_refs
+-r--r--r--  1 polina polina   0 Mar 13 08:57 cmdline
+-rw-r--r--  1 polina polina   0 Mar 13 08:57 comm
+-rw-r--r--  1 polina polina   0 Mar 13 11:26 coredump_filter
+-r--r--r--  1 polina polina   0 Mar 13 11:26 cpu_resctrl_groups
+-r--r--r--  1 polina polina   0 Mar 13 11:26 cpuset
+lrwxrwxrwx  1 polina polina   0 Mar 13 08:58 cwd -> /
+-r--------  1 polina polina   0 Mar 13 08:58 environ
+lrwxrwxrwx  1 polina polina   0 Mar 13 08:57 exe -> /usr/lib/systemd/systemd
+dr-x------  2 polina polina 136 Mar 13 08:57 fd
+dr-xr-xr-x  2 polina polina   0 Mar 13 08:57 fdinfo
+-rw-r--r--  1 polina polina   0 Mar 13 08:57 gid_map
+-r--------  1 polina polina   0 Mar 13 11:26 io
+-r--------  1 polina polina   0 Mar 13 11:26 ksm_merging_pages
+-r--------  1 polina polina   0 Mar 13 11:26 ksm_stat
+-r--r--r--  1 polina polina   0 Mar 13 11:26 latency
+-r--r--r--  1 polina polina   0 Mar 13 11:26 limits
+-rw-r--r--  1 polina polina   0 Mar 13 08:57 loginuid
+dr-x------  2 polina polina   0 Mar 13 11:26 map_files
+-r--r--r--  1 polina polina   0 Mar 13 08:58 maps
+-rw-------  1 polina polina   0 Mar 13 11:26 mem
+-r--r--r--  1 polina polina   0 Mar 13 08:57 mountinfo
+-r--r--r--  1 polina polina   0 Mar 13 11:26 mounts
+-r--------  1 polina polina   0 Mar 13 11:26 mountstats
+dr-xr-xr-x 59 polina polina   0 Mar 13 08:57 net
+dr-x--x--x  2 polina polina   0 Mar 13 08:57 ns
+-r--r--r--  1 polina polina   0 Mar 13 11:26 numa_maps
+-rw-r--r--  1 polina polina   0 Mar 13 11:26 oom_adj
+-r--r--r--  1 polina polina   0 Mar 13 11:26 oom_score
+-rw-r--r--  1 polina polina   0 Mar 13 08:57 oom_score_adj
+-r--------  1 polina polina   0 Mar 13 11:26 pagemap
+-r--------  1 polina polina   0 Mar 13 11:26 patch_state
+-r--------  1 polina polina   0 Mar 13 11:26 personality
+-rw-r--r--  1 polina polina   0 Mar 13 11:26 projid_map
+lrwxrwxrwx  1 polina polina   0 Mar 13 08:58 root -> /
+-rw-r--r--  1 polina polina   0 Mar 13 11:26 sched
+-r--r--r--  1 polina polina   0 Mar 13 11:26 schedstat
+-r--r--r--  1 polina polina   0 Mar 13 08:57 sessionid
+-rw-r--r--  1 polina polina   0 Mar 13 11:26 setgroups
+-r--r--r--  1 polina polina   0 Mar 13 11:26 smaps
+-r--r--r--  1 polina polina   0 Mar 13 11:26 smaps_rollup
+-r--------  1 polina polina   0 Mar 13 11:26 stack
+-r--r--r--  1 polina polina   0 Mar 13 08:57 stat
+-r--r--r--  1 polina polina   0 Mar 13 11:26 statm
+-r--r--r--  1 polina polina   0 Mar 13 08:57 status
+-r--------  1 polina polina   0 Mar 13 11:26 syscall
+dr-xr-xr-x  3 polina polina   0 Mar 13 11:19 task
+-rw-r--r--  1 polina polina   0 Mar 13 11:26 timens_offsets
+-r--r--r--  1 polina polina   0 Mar 13 11:26 timers
+-rw-rw-rw-  1 polina polina   0 Mar 13 11:26 timerslack_ns
+-rw-r--r--  1 polina polina   0 Mar 13 08:57 uid_map
+-r--r--r--  1 polina polina   0 Mar 13 11:26 wchan
+
+polina@polina-UX303UA:~$ sudo cat /proc/2069/cmdline 
+/usr/lib/systemd/systemd--user
+# cmdline содержит командную строку, которой был запущен процесс
+# процесс 2069 — это systemd --user, который управляет пользовательскими сервисами
+
+polina@polina-UX303UA:~$ sudo cat /proc/2069/status 
+Name:	systemd
+Umask:	0002
+State:	S (sleeping)
+Tgid:	2069
+Ngid:	0
+Pid:	2069
+PPid:	1
+TracerPid:	0
+Uid:	1000	1000	1000	1000
+Gid:	1000	1000	1000	1000
+FDSize:	512
+Groups:	4 24 27 30 46 100 114 1000 
+NStgid:	2069
+NSpid:	2069
+NSpgid:	2069
+NSsid:	2069
+Kthread:	0
+VmPeak:	   21328 kB
+VmSize:	   21292 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	   12652 kB
+VmRSS:	   12652 kB
+RssAnon:	    2924 kB
+RssFile:	    9728 kB
+RssShmem:	       0 kB
+VmData:	    2268 kB
+VmStk:	     132 kB
+VmExe:	      44 kB
+VmLib:	   12188 kB
+VmPTE:	      88 kB
+VmSwap:	       0 kB
+HugetlbPages:	       0 kB
+CoreDumping:	0
+THP_enabled:	1
+untag_mask:	0xffffffffffffffff
+Threads:	1
+SigQ:	0/22766
+SigPnd:	0000000000000000
+ShdPnd:	0000000000000000
+SigBlk:	7fefc1fe28014a03
+SigIgn:	0000000000001000
+SigCgt:	0000000000000000
+CapInh:	0000000800000000
+CapPrm:	0000000800000000
+CapEff:	0000000800000000
+CapBnd:	000001ffffffffff
+CapAmb:	0000000000000000
+NoNewPrivs:	0
+Seccomp:	0
+Seccomp_filters:	0
+Speculation_Store_Bypass:	thread vulnerable
+SpeculationIndirectBranch:	conditional enabled
+Cpus_allowed:	f
+Cpus_allowed_list:	0-3
+Mems_allowed:	00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001
+Mems_allowed_list:	0
+voluntary_ctxt_switches:	478
+nonvoluntary_ctxt_switches:	611
+x86_Thread_features:	
+x86_Thread_features_locked:	
+
+polina@polina-UX303UA:~$ id polina
+uid=1000(polina) gid=1000(polina) группы=1000(polina),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),100(users),114(lpadmin)
+
+# процесс запущен пользователем polina, его родительский процесс имеет pid = 1 (init)
+
+# перемнные окружения
+polina@polina-UX303UA:~$ sudo cat /proc/2069/environ 
+[sudo] пароль для polina: 
+LANG=ru_RU.UTF-8PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/binNOTIFY_SOCKET=/run/systemd/notifyUSER=polinaLOGNAME=polinaHOME=/home/polinaSHELL=/bin/bashINVOCATION_ID=b968744c05524a9c9930980de4cf9b7cJOURNAL_STREAM=9:15165SYSTEMD_EXEC_PID=2069XDG_RUNTIME_DIR=/run/user/1000polina@polina-UX303UA:~$ sudo cat /proc/sudo cat /proc/2069/environ | tr '\0' '\n'
+LANG=ru_RU.UTF-8
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin
+NOTIFY_SOCKET=/run/systemd/notify
+USER=polina
+LOGNAME=polina
+HOME=/home/polina
+SHELL=/bin/bash
+INVOCATION_ID=b968744c05524a9c9930980de4cf9b7c
+JOURNAL_STREAM=9:15165
+SYSTEMD_EXEC_PID=2069
+XDG_RUNTIME_DIR=/run/user/1000
+
+
+#Каталог, содержащий симлинки на файлы, открытые процессом.
+polina@polina-UX303UA:~$ sudo ls -l /proc/2069/fd
+итого 0
+lr-x------ 1 polina polina 64 Mar 13 08:57 0 -> /dev/null
+lrwx------ 1 polina polina 64 Mar 13 08:57 1 -> 'socket:[15165]'
+lr-x------ 1 polina polina 64 Mar 13 08:57 10 -> anon_inode:inotify
+lrwx------ 1 polina polina 64 Mar 13 08:58 100 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 101 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 102 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 103 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 104 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 105 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 106 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 107 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 108 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 109 -> 'anon_inode:[pidfd]'
+lr-x------ 1 polina polina 64 Mar 13 08:58 11 -> anon_inode:inotify
+lrwx------ 1 polina polina 64 Mar 13 08:58 110 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 111 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 112 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 113 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 114 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 115 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 116 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 117 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 118 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 119 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 12 -> 'anon_inode:[timerfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 120 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 121 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 122 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 123 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 124 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 125 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 126 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 127 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 128 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 129 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 13 -> 'anon_inode:[eventpoll]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 130 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 131 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 132 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 133 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 134 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 135 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 13:24 136 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 137 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 13:24 138 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 13:24 139 -> 'anon_inode:[pidfd]'
+lr-x------ 1 polina polina 64 Mar 13 08:58 14 -> /proc/2069/mountinfo
+lr-x------ 1 polina polina 64 Mar 13 08:58 15 -> anon_inode:inotify
+lr-x------ 1 polina polina 64 Mar 13 08:58 16 -> /proc/swaps
+lrwx------ 1 polina polina 64 Mar 13 08:58 17 -> 'socket:[16052]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 18 -> 'socket:[16057]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 19 -> 'socket:[16058]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 2 -> 'socket:[15165]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 20 -> 'socket:[16059]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 21 -> 'socket:[16060]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 22 -> 'socket:[16061]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 23 -> 'anon_inode:[timerfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 24 -> 'socket:[16062]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 29 -> /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/init.scope/memory.pressure
+lrwx------ 1 polina polina 64 Mar 13 08:57 3 -> 'socket:[16035]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 30 -> 'socket:[16067]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 31 -> 'socket:[16101]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 32 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 33 -> 'socket:[16069]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 34 -> 'socket:[16071]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 35 -> 'socket:[16073]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 36 -> 'socket:[16075]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 37 -> 'socket:[16077]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 38 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 39 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 4 -> 'anon_inode:[eventpoll]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 40 -> 'socket:[16079]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 41 -> 'socket:[16081]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 42 -> 'socket:[16083]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 43 -> 'socket:[16085]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 44 -> 'socket:[16087]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 45 -> 'socket:[16089]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 46 -> 'socket:[16091]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 47 -> 'socket:[16093]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 48 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 49 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 5 -> 'anon_inode:[signalfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 50 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 51 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 52 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 53 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 54 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 55 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 56 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 57 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 58 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 59 -> 'socket:[16151]'
+lr-x------ 1 polina polina 64 Mar 13 08:58 6 -> anon_inode:inotify
+lrwx------ 1 polina polina 64 Mar 13 08:58 60 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 61 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 62 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 63 -> 'anon_inode:[pidfd]'
+lr-x------ 1 polina polina 64 Mar 13 08:58 64 -> anon_inode:inotify
+lr-x------ 1 polina polina 64 Mar 13 08:58 65 -> anon_inode:inotify
+lrwx------ 1 polina polina 64 Mar 13 08:58 66 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 67 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 68 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 69 -> 'anon_inode:[pidfd]'
+lr-x------ 1 polina polina 64 Mar 13 08:58 7 -> /sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service
+lrwx------ 1 polina polina 64 Mar 13 08:58 70 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 71 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 72 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 73 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 74 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 75 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 76 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 77 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 78 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 79 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 8 -> 'anon_inode:[timerfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 80 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 81 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 82 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 83 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 84 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 85 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 86 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 87 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 88 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 89 -> 'anon_inode:[pidfd]'
+l--------- 1 polina polina 64 Mar 13 08:57 9 -> /usr/lib/systemd/systemd-executor
+lrwx------ 1 polina polina 64 Mar 13 08:58 90 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:57 91 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 92 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 93 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 94 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 95 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 96 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 97 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 98 -> 'anon_inode:[pidfd]'
+lrwx------ 1 polina polina 64 Mar 13 08:58 99 -> 'anon_inode:[pidfd]'
+
+#Содержит информацию о памяти процесса, включая отображённые библиотеки и файлы
+polina@polina-UX303UA:~$ sudo cat /proc/2069/maps
+58b15d21c000-58b15d222000 r--p 00000000 08:02 14826312                   /usr/lib/systemd/systemd
+58b15d222000-58b15d22d000 r-xp 00006000 08:02 14826312                   /usr/lib/systemd/systemd
+58b15d22d000-58b15d233000 r--p 00011000 08:02 14826312                   /usr/lib/systemd/systemd
+58b15d233000-58b15d235000 r--p 00016000 08:02 14826312                   /usr/lib/systemd/systemd
+58b15d235000-58b15d236000 rw-p 00018000 08:02 14826312                   /usr/lib/systemd/systemd
+58b19b0bc000-58b19b29a000 rw-p 00000000 00:00 0                          [heap]
+79719ed66000-79719ed68000 r--p 00000000 08:02 14821129                   /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2
+79719ed68000-79719edd6000 r-xp 00002000 08:02 14821129                   /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2
+79719edd6000-79719edfe000 r--p 00070000 08:02 14821129                   /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2
+79719edfe000-79719edff000 r--p 00097000 08:02 14821129                   /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2
+79719edff000-79719ee00000 rw-p 00098000 08:02 14821129                   /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2
+79719ee00000-79719eeb3000 r--p 00000000 08:02 14814019                   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+79719eeb3000-79719f1e6000 r-xp 000b3000 08:02 14814019                   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+79719f1e6000-79719f2b1000 r--p 003e6000 08:02 14814019                   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+79719f2b1000-79719f30d000 r--p 004b0000 08:02 14814019                   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+79719f30d000-79719f310000 rw-p 0050c000 08:02 14814019                   /usr/lib/x86_64-linux-gnu/libcrypto.so.3
+79719f310000-79719f313000 rw-p 00000000 00:00 0 
+79719f321000-79719f325000 r--p 00000000 08:02 14815744                   /usr/lib/x86_64-linux-gnu/libgpg-error.so.0.34.0
+79719f325000-79719f33b000 r-xp 00004000 08:02 14815744                   /usr/lib/x86_64-linux-gnu/libgpg-error.so.0.34.0
+79719f33b000-79719f344000 r--p 0001a000 08:02 14815744                   /usr/lib/x86_64-linux-gnu/libgpg-error.so.0.34.0
+79719f344000-79719f345000 r--p 00023000 08:02 14815744                   /usr/lib/x86_64-linux-gnu/libgpg-error.so.0.34.0
+79719f345000-79719f346000 rw-p 00024000 08:02 14815744                   /usr/lib/x86_64-linux-gnu/libgpg-error.so.0.34.0
+79719f346000-79719f34a000 r--p 00000000 08:02 14823189                   /usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5
+79719f34a000-79719f3f1000 r-xp 00004000 08:02 14823189                   /usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5
+79719f3f1000-79719f3fe000 r--p 000ab000 08:02 14823189                   /usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5
+79719f3fe000-79719f3ff000 r--p 000b7000 08:02 14823189                   /usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5
+79719f3ff000-79719f400000 rw-p 000b8000 08:02 14823189                   /usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5
+79719f400000-79719f428000 r--p 00000000 08:02 14813610                   /usr/lib/x86_64-linux-gnu/libc.so.6
+79719f428000-79719f5b0000 r-xp 00028000 08:02 14813610                   /usr/lib/x86_64-linux-gnu/libc.so.6
+79719f5b0000-79719f5ff000 r--p 001b0000 08:02 14813610                   /usr/lib/x86_64-linux-gnu/libc.so.6
+79719f5ff000-79719f603000 r--p 001fe000 08:02 14813610                   /usr/lib/x86_64-linux-gnu/libc.so.6
+79719f603000-79719f605000 rw-p 00202000 08:02 14813610                   /usr/lib/x86_64-linux-gnu/libc.so.6
+79719f605000-79719f612000 rw-p 00000000 00:00 0 
+79719f61f000-79719f622000 rw-p 00000000 00:00 0 
+79719f622000-79719f624000 r--p 00000000 08:02 14822542                   /usr/lib/x86_64-linux-gnu/libcap-ng.so.0.0.0
+79719f624000-79719f627000 r-xp 00002000 08:02 14822542                   /usr/lib/x86_64-linux-gnu/libcap-ng.so.0.0.0
+79719f627000-79719f628000 r--p 00005000 08:02 14822542                   /usr/lib/x86_64-linux-gnu/libcap-ng.so.0.0.0
+79719f628000-79719f629000 r--p 00005000 08:02 14822542                   /usr/lib/x86_64-linux-gnu/libcap-ng.so.0.0.0
+79719f629000-79719f62a000 rw-p 00006000 08:02 14822542                   /usr/lib/x86_64-linux-gnu/libcap-ng.so.0.0.0
+79719f62a000-79719f62d000 r--p 00000000 08:02 14822834                   /usr/lib/x86_64-linux-gnu/liblzma.so.5.4.5
+79719f62d000-79719f64f000 r-xp 00003000 08:02 14822834                   /usr/lib/x86_64-linux-gnu/liblzma.so.5.4.5
+79719f64f000-79719f65a000 r--p 00025000 08:02 14822834                   /usr/lib/x86_64-linux-gnu/liblzma.so.5.4.5
+79719f65a000-79719f65b000 r--p 00030000 08:02 14822834                   /usr/lib/x86_64-linux-gnu/liblzma.so.5.4.5
+79719f65b000-79719f65c000 rw-p 00031000 08:02 14822834                   /usr/lib/x86_64-linux-gnu/liblzma.so.5.4.5
+79719f65c000-79719f65f000 r--p 00000000 08:02 14822833                   /usr/lib/x86_64-linux-gnu/liblz4.so.1.9.4
+79719f65f000-79719f67a000 r-xp 00003000 08:02 14822833                   /usr/lib/x86_64-linux-gnu/liblz4.so.1.9.4
+79719f67a000-79719f67c000 r--p 0001e000 08:02 14822833                   /usr/lib/x86_64-linux-gnu/liblz4.so.1.9.4
+79719f67c000-79719f67d000 r--p 00020000 08:02 14822833                   /usr/lib/x86_64-linux-gnu/liblz4.so.1.9.4
+79719f67d000-79719f67e000 rw-p 00021000 08:02 14822833                   /usr/lib/x86_64-linux-gnu/liblz4.so.1.9.4
+79719f67e000-79719f68d000 r--p 00000000 08:02 14822670                   /usr/lib/x86_64-linux-gnu/libgcrypt.so.20.4.3
+79719f68d000-79719f781000 r-xp 0000f000 08:02 14822670                   /usr/lib/x86_64-linux-gnu/libgcrypt.so.20.4.3
+79719f781000-79719f7bc000 r--p 00103000 08:02 14822670                   /usr/lib/x86_64-linux-gnu/libgcrypt.so.20.4.3
+79719f7bc000-79719f7c1000 r--p 0013e000 08:02 14822670                   /usr/lib/x86_64-linux-gnu/libgcrypt.so.20.4.3
+79719f7c1000-79719f7c5000 rw-p 00143000 08:02 14822670                   /usr/lib/x86_64-linux-gnu/libgcrypt.so.20.4.3
+79719f7c5000-79719f7c6000 rw-p 00000000 00:00 0 
+79719f7c6000-79719f7c8000 r--p 00000000 08:02 14822559                   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+79719f7c8000-79719f7dd000 r-xp 00002000 08:02 14822559                   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+79719f7dd000-79719f7f6000 r--p 00017000 08:02 14822559                   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+79719f7f6000-79719f7f7000 r--p 0002f000 08:02 14822559                   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+79719f7f7000-79719f7f8000 rw-p 00030000 08:02 14822559                   /usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
+79719f7f8000-79719f800000 rw-p 00000000 00:00 0 
+79719f800000-79719f86a000 r--p 00000000 08:02 14820597                   /usr/lib/x86_64-linux-gnu/systemd/libsystemd-shared-255.so
+79719f86a000-79719fab1000 r-xp 0006a000 08:02 14820597                   /usr/lib/x86_64-linux-gnu/systemd/libsystemd-shared-255.so
+79719fab1000-79719fb76000 r--p 002b1000 08:02 14820597                   /usr/lib/x86_64-linux-gnu/systemd/libsystemd-shared-255.so
+79719fb76000-79719fb93000 r--p 00375000 08:02 14820597                   /usr/lib/x86_64-linux-gnu/systemd/libsystemd-shared-255.so
+79719fb93000-79719fb95000 rw-p 00392000 08:02 14820597                   /usr/lib/x86_64-linux-gnu/systemd/libsystemd-shared-255.so
+79719fb95000-79719fb97000 rw-p 00000000 00:00 0 
+79719fb97000-79719fb9b000 rw-p 00000000 00:00 0 
+79719fb9b000-79719fb9e000 r--p 00000000 08:02 14822932                   /usr/lib/x86_64-linux-gnu/libpam.so.0.85.1
+79719fb9e000-79719fba7000 r-xp 00003000 08:02 14822932                   /usr/lib/x86_64-linux-gnu/libpam.so.0.85.1
+79719fba7000-79719fbaa000 r--p 0000c000 08:02 14822932                   /usr/lib/x86_64-linux-gnu/libpam.so.0.85.1
+79719fbaa000-79719fbab000 r--p 0000f000 08:02 14822932                   /usr/lib/x86_64-linux-gnu/libpam.so.0.85.1
+79719fbab000-79719fbac000 rw-p 00010000 08:02 14822932                   /usr/lib/x86_64-linux-gnu/libpam.so.0.85.1
+79719fbac000-79719fbae000 rw-p 00000000 00:00 0 
+79719fbae000-79719fbb1000 r--p 00000000 08:02 14816243                   /usr/lib/x86_64-linux-gnu/libcap.so.2.66
+79719fbb1000-79719fbb7000 r-xp 00003000 08:02 14816243                   /usr/lib/x86_64-linux-gnu/libcap.so.2.66
+79719fbb7000-79719fbb9000 r--p 00009000 08:02 14816243                   /usr/lib/x86_64-linux-gnu/libcap.so.2.66
+79719fbb9000-79719fbba000 r--p 0000b000 08:02 14816243                   /usr/lib/x86_64-linux-gnu/libcap.so.2.66
+79719fbba000-79719fbbb000 rw-p 0000c000 08:02 14816243                   /usr/lib/x86_64-linux-gnu/libcap.so.2.66
+79719fbbb000-79719fbc2000 r--p 00000000 08:02 14820731                   /usr/lib/x86_64-linux-gnu/libblkid.so.1.1.0
+79719fbc2000-79719fbe6000 r-xp 00007000 08:02 14820731                   /usr/lib/x86_64-linux-gnu/libblkid.so.1.1.0
+79719fbe6000-79719fbef000 r--p 0002b000 08:02 14820731                   /usr/lib/x86_64-linux-gnu/libblkid.so.1.1.0
+79719fbef000-79719fbf5000 r--p 00033000 08:02 14820731                   /usr/lib/x86_64-linux-gnu/libblkid.so.1.1.0
+79719fbf5000-79719fbf6000 rw-p 00039000 08:02 14820731                   /usr/lib/x86_64-linux-gnu/libblkid.so.1.1.0
+79719fbf6000-79719fbf8000 r--p 00000000 08:02 14811731                   /usr/lib/x86_64-linux-gnu/libacl.so.1.1.2302
+79719fbf8000-79719fbfd000 r-xp 00002000 08:02 14811731                   /usr/lib/x86_64-linux-gnu/libacl.so.1.1.2302
+79719fbfd000-79719fbfe000 r--p 00007000 08:02 14811731                   /usr/lib/x86_64-linux-gnu/libacl.so.1.1.2302
+79719fbfe000-79719fbff000 r--p 00008000 08:02 14811731                   /usr/lib/x86_64-linux-gnu/libacl.so.1.1.2302
+79719fbff000-79719fc00000 rw-p 00009000 08:02 14811731                   /usr/lib/x86_64-linux-gnu/libacl.so.1.1.2302
+79719fc00000-79719fc48000 r--p 00000000 08:02 14812271                   /usr/lib/x86_64-linux-gnu/systemd/libsystemd-core-255.so
+79719fc48000-79719fd53000 r-xp 00048000 08:02 14812271                   /usr/lib/x86_64-linux-gnu/systemd/libsystemd-core-255.so
+79719fd53000-79719fdb3000 r--p 00153000 08:02 14812271                   /usr/lib/x86_64-linux-gnu/systemd/libsystemd-core-255.so
+79719fdb3000-79719fe0b000 r--p 001b2000 08:02 14812271                   /usr/lib/x86_64-linux-gnu/systemd/libsystemd-core-255.so
+79719fe0b000-79719fe0c000 rw-p 0020a000 08:02 14812271                   /usr/lib/x86_64-linux-gnu/systemd/libsystemd-core-255.so
+79719fe0d000-79719fe0f000 rw-p 00000000 00:00 0 
+79719fe0f000-79719fe15000 r--p 00000000 08:02 14825004                   /usr/lib/x86_64-linux-gnu/libselinux.so.1
+79719fe15000-79719fe32000 r-xp 00006000 08:02 14825004                   /usr/lib/x86_64-linux-gnu/libselinux.so.1
+79719fe32000-79719fe38000 r--p 00023000 08:02 14825004                   /usr/lib/x86_64-linux-gnu/libselinux.so.1
+79719fe38000-79719fe39000 r--p 00029000 08:02 14825004                   /usr/lib/x86_64-linux-gnu/libselinux.so.1
+79719fe39000-79719fe3a000 rw-p 0002a000 08:02 14825004                   /usr/lib/x86_64-linux-gnu/libselinux.so.1
+79719fe3a000-79719fe3c000 rw-p 00000000 00:00 0 
+79719fe3c000-79719fe3e000 r--p 00000000 08:02 14823020                   /usr/lib/x86_64-linux-gnu/libseccomp.so.2.5.5
+79719fe3e000-79719fe4c000 r-xp 00002000 08:02 14823020                   /usr/lib/x86_64-linux-gnu/libseccomp.so.2.5.5
+79719fe4c000-79719fe5a000 r--p 00010000 08:02 14823020                   /usr/lib/x86_64-linux-gnu/libseccomp.so.2.5.5
+79719fe5a000-79719fe5b000 r--p 0001d000 08:02 14823020                   /usr/lib/x86_64-linux-gnu/libseccomp.so.2.5.5
+79719fe5b000-79719fe5c000 rw-p 0001e000 08:02 14823020                   /usr/lib/x86_64-linux-gnu/libseccomp.so.2.5.5
+79719fe5c000-79719fe65000 r--p 00000000 08:02 14820116                   /usr/lib/x86_64-linux-gnu/libmount.so.1.1.0
+79719fe65000-79719fe99000 r-xp 00009000 08:02 14820116                   /usr/lib/x86_64-linux-gnu/libmount.so.1.1.0
+79719fe99000-79719fea6000 r--p 0003d000 08:02 14820116                   /usr/lib/x86_64-linux-gnu/libmount.so.1.1.0
+79719fea6000-79719fea8000 r--p 00049000 08:02 14820116                   /usr/lib/x86_64-linux-gnu/libmount.so.1.1.0
+79719fea8000-79719fea9000 rw-p 0004b000 08:02 14820116                   /usr/lib/x86_64-linux-gnu/libmount.so.1.1.0
+79719fea9000-79719feb9000 r--p 00000000 08:02 14813613                   /usr/lib/x86_64-linux-gnu/libm.so.6
+79719feb9000-79719ff38000 r-xp 00010000 08:02 14813613                   /usr/lib/x86_64-linux-gnu/libm.so.6
+79719ff38000-79719ff90000 r--p 0008f000 08:02 14813613                   /usr/lib/x86_64-linux-gnu/libm.so.6
+79719ff90000-79719ff91000 r--p 000e7000 08:02 14813613                   /usr/lib/x86_64-linux-gnu/libm.so.6
+79719ff91000-79719ff92000 rw-p 000e8000 08:02 14813613                   /usr/lib/x86_64-linux-gnu/libm.so.6
+79719ff92000-79719ff96000 r--p 00000000 08:02 14811221                   /usr/lib/x86_64-linux-gnu/libkmod.so.2.4.1
+79719ff96000-79719ffa8000 r-xp 00004000 08:02 14811221                   /usr/lib/x86_64-linux-gnu/libkmod.so.2.4.1
+79719ffa8000-79719ffac000 r--p 00016000 08:02 14811221                   /usr/lib/x86_64-linux-gnu/libkmod.so.2.4.1
+79719ffac000-79719ffad000 r--p 0001a000 08:02 14811221                   /usr/lib/x86_64-linux-gnu/libkmod.so.2.4.1
+79719ffad000-79719ffae000 rw-p 0001b000 08:02 14811221                   /usr/lib/x86_64-linux-gnu/libkmod.so.2.4.1
+79719ffae000-79719ffb0000 rw-p 00000000 00:00 0 
+79719ffb0000-79719ffb3000 r--p 00000000 08:02 14820107                   /usr/lib/x86_64-linux-gnu/libaudit.so.1.0.0
+79719ffb3000-79719ffbb000 r-xp 00003000 08:02 14820107                   /usr/lib/x86_64-linux-gnu/libaudit.so.1.0.0
+79719ffbb000-79719ffd0000 r--p 0000b000 08:02 14820107                   /usr/lib/x86_64-linux-gnu/libaudit.so.1.0.0
+79719ffd0000-79719ffd1000 r--p 0001f000 08:02 14820107                   /usr/lib/x86_64-linux-gnu/libaudit.so.1.0.0
+79719ffd1000-79719ffd2000 rw-p 00020000 08:02 14820107                   /usr/lib/x86_64-linux-gnu/libaudit.so.1.0.0
+79719ffd2000-79719ffde000 rw-p 00000000 00:00 0 
+79719ffde000-79719ffe1000 r--p 00000000 08:02 14820095                   /usr/lib/x86_64-linux-gnu/libapparmor.so.1.17.1
+79719ffe1000-79719ffea000 r-xp 00003000 08:02 14820095                   /usr/lib/x86_64-linux-gnu/libapparmor.so.1.17.1
+79719ffea000-79719fff0000 r--p 0000c000 08:02 14820095                   /usr/lib/x86_64-linux-gnu/libapparmor.so.1.17.1
+79719fff0000-79719fff1000 r--p 00012000 08:02 14820095                   /usr/lib/x86_64-linux-gnu/libapparmor.so.1.17.1
+79719fff1000-79719fff2000 rw-p 00013000 08:02 14820095                   /usr/lib/x86_64-linux-gnu/libapparmor.so.1.17.1
+7971a0009000-7971a000b000 rw-p 00000000 00:00 0 
+7971a000b000-7971a000f000 r--p 00000000 00:00 0                          [vvar]
+7971a000f000-7971a0011000 r-xp 00000000 00:00 0                          [vdso]
+7971a0011000-7971a0012000 r--p 00000000 08:02 14813607                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7971a0012000-7971a003d000 r-xp 00001000 08:02 14813607                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7971a003d000-7971a0047000 r--p 0002c000 08:02 14813607                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7971a0047000-7971a0049000 r--p 00036000 08:02 14813607                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7971a0049000-7971a004b000 rw-p 00038000 08:02 14813607                   /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7fff8f32d000-7fff8f34e000 rw-p 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]
+
+
+#Исполняемый файл процесса
+polina@polina-UX303UA:~$ sudo ls -l /proc/2069/exe
+lrwxrwxrwx 1 polina polina 0 Mar 13 08:57 /proc/2069/exe -> /usr/lib/systemd/systemd
+
+2.1
+polina@polina-UX303UA:~/OS$ cat task21.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+
+int main() {
+  pid_t pid;
+  pid_t ppid = getpid(); // Получаем PID родительского процесса
+
+  pid = fork();
+
+  if (pid < 0) {
+    fprintf(stderr, "Fork failed\n");
+    exit(1);
+  } else if (pid == 0) { // Это дочерний процесс
+    printf("Дочерний процесс: PID = %d, PPID = %d\n", getpid(), getppid());
+    //Однократные вычисления
+    int result = 10 + 5; 
+    printf("Дочерний процесс: Результат вычислений = %d\n", result);
+    sleep(3); //задержка 3 секунды.
+    printf("Дочерний процесс: Завершение работы.\n");
+    exit(0);
+  } else { // Это родительский процесс
+    printf("Родительский процесс: PID = %d, PPID = %d\n", getpid(), getppid());
+    //Однократные вычисления 
+    int result = 20 + 30;
+    printf("Родительский процесс: Результат вычислений = %d\n", result);
+    sleep(2); //задержка 2 секунды
+    printf("Родительский процесс: Ожидание завершения дочернего процесса...\n");
+
+    wait(NULL); // Ожидаем завершения дочернего процесса
+    printf("Родительский процесс: Дочерний процесс завершился.\n");
+  }
+
+  printf("Программа завершена.\n");
+  exit(0);
+}
+polina@polina-UX303UA:~/OS$ ./a.out
+Родительский процесс: PID = 9769, PPID = 3117
+Родительский процесс: Результат вычислений = 50
+Дочерний процесс: PID = 9770, PPID = 9769
+Дочерний процесс: Результат вычислений = 15
+Родительский процесс: Ожидание завершения дочернего процесса...
+Дочерний процесс: Завершение работы.
+Родительский процесс: Дочерний процесс завершился.
+Программа завершена.
+
+# сначала выводится информация о родительском процессе, затем о дочернем.  Это потому, что родительский процесс создает дочерний, а затем продолжает свое выполнение. Операционная система переключает контекст между процессами, поэтому наблюдается чередование вывода.
+
+#task21.c с циклами
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+
+int main() {
+  pid_t pid;
+  pid_t ppid = getpid(); // Получаем PID родительского процесса
+
+  pid = fork();
+
+  if (pid < 0) {
+    fprintf(stderr, "Fork failed\n");
+    exit(1);
+  } else if (pid == 0) { // Это дочерний процесс
+    printf("Дочерний процесс: PID = %d, PPID = %d\n", getpid(), getppid());
+    int result_son = 20;
+    //Долгое вычисление(пример)
+    for (long i = 0; i < 10; i++){
+      result_son = result_son + i;
+      printf("Дочерний процесс: Результат вычислений = %d\n", result_son);
+      sleep(3); //задержка 3 секунды.
+    }
+    sleep(3); //задержка 3 секунды.
+    printf("Дочерний процесс: Завершение работы.\n");
+    exit(0);
+  } else { // Это родительский процесс
+    printf("Родительский процесс: PID = %d, PPID = %d\n", getpid(), getppid());
+    //Однократные вычисления (замена на цикл в следующей версии)
+    int result_parent = 1;
+    
+    //Долгое вычисление(пример)
+    for (long i = 0; i < 10; i++){
+      result_parent = result_parent + i;
+      printf("Родительский процесс: Результат вычислений = %d\n", result_parent);	
+      sleep(3); //задержка 3 секунды.
+    }	    
+    sleep(2); //задержка 2 секунды
+    printf("Родительский процесс: Ожидание завершения дочернего процесса...\n");
+
+    wait(NULL); // Ожидаем завершения дочернего процесса
+    printf("Родительский процесс: Дочерний процесс завершился.\n");
+  }
+
+  printf("Программа завершена.\n");
+  exit(0);
+}
+
+
+polina@polina-UX303UA:~/OS$ g++ task21.c 
+polina@polina-UX303UA:~/OS$ ./a.out
+Родительский процесс: PID = 11065, PPID = 3117
+Родительский процесс: Результат вычислений = 1
+Дочерний процесс: PID = 11066, PPID = 11065
+Дочерний процесс: Результат вычислений = 20
+Дочерний процесс: Результат вычислений = 21
+Родительский процесс: Результат вычислений = 2
+Дочерний процесс: Результат вычислений = 23
+Родительский процесс: Результат вычислений = 4
+Дочерний процесс: Результат вычислений = 26
+Родительский процесс: Результат вычислений = 7
+Дочерний процесс: Результат вычислений = 30
+Родительский процесс: Результат вычислений = 11
+Дочерний процесс: Результат вычислений = 35
+Родительский процесс: Результат вычислений = 16
+Дочерний процесс: Результат вычислений = 41
+Родительский процесс: Результат вычислений = 22
+Родительский процесс: Результат вычислений = 29
+Дочерний процесс: Результат вычислений = 48
+Дочерний процесс: Результат вычислений = 56
+Родительский процесс: Результат вычислений = 37
+Дочерний процесс: Результат вычислений = 65
+Родительский процесс: Результат вычислений = 46
+Родительский процесс: Ожидание завершения дочернего процесса...
+Дочерний процесс: Завершение работы.
+Родительский процесс: Дочерний процесс завершился.
+Программа завершена.
+
+# во время работы цикла более наглядно видно как планировщик меняет приоритеты, что выводы постоянно чередуются
+
+2.2
+
+son.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+
+int main() {
+    pid_t pid;
+    pid_t ppid = getpid(); // Получаем PID родительского процесса
+    printf("Дочерний процесс: PID = %d, PPID = %d\n", getpid(), getppid());
+    // Фиксируем состояние таблицы процессов в дочернем процессе
+    system("ps -l > son_process.txt");
+    
+    //Долгое вычисление(пример)
+    for (long i = 0; i < 10; i++){
+      int result_son = 20 + i;
+      printf("Дочерний процесс: Итерация цикла = %d\n", result_son);
+      system("ps -l> output_son.txt");
+      sleep(3); //задержка 3 секунды.
+    }
+    printf("Дочерняя Программа завершена.\n");
+    exit(0);
+  }
+  
+  
+father.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+
+
+int main() {
+
+    printf("Родительский процесс: PID = %d, PPID = %d\n", getpid(), getppid());
+
+    // Фиксируем состояние таблицы процессов до создания дочернего процесса
+    system("ps -l > father_before_fork.txt");
+
+    pid_t pid = fork();
+    
+
+    if (pid < 0) {
+        fprintf(stderr, "Ошибка при создании дочернего процесса\n");
+        exit(1);
+    } else if (pid == 0) { // Дочерний процесс
+        // Запускаем программу son.out
+        execl("./son.out", "son.out", NULL);
+        // Если execl вернул управление, значит произошла ошибка
+        perror("execl");
+        exit(1);
+    } else { // Родительский процесс
+        // Фиксируем состояние таблицы процессов после создания дочернего процесса
+        system("ps -l > father_after_fork.txt");
+        long result_father = 0;
+        printf("Родительский процесс: Дочерний процесс создан с PID = %d\n", pid);
+        for (int i = 0; i < 10; i++){
+            result_father = result_father + i;
+            printf("Родительский процесс: итерация цикла:  = %d\n", i);
+            system("ps -l> output_son.txt");
+            sleep(3); //задержка 3 секунды.
+          }
+
+        // Ожидаем завершения дочернего процесса
+        wait(NULL);
+        printf("Родительский процесс: Дочерний процесс завершился.\n");
+
+        // Фиксируем состояние таблицы процессов после завершения дочернего процесса
+        system("ps -l > father_after_son_exit.txt");
+    }
+    system("ps -l > father_process_after.txt");
+    printf("Родительский процесс: Завершение работы.\n");
+    return 0;
+  }
+  
+  
+  polina@polina-UX303UA:~/OS$ g++ father.c -o father
+polina@polina-UX303UA:~/OS$ g++ son.c -o son.out
+polina@polina-UX303UA:~/OS$ ./father 
+Родительский процесс: PID = 14345, PPID = 3117
+Дочерний процесс: PID = 14348, PPID = 14345
+Родительский процесс: Дочерний процесс создан с PID = 14348
+Родительский процесс: итерация цикла:  = 0
+Дочерний процесс: Итерация цикла = 20
+Родительский процесс: итерация цикла:  = 1
+Дочерний процесс: Итерация цикла = 21
+Родительский процесс: итерация цикла:  = 2
+Дочерний процесс: Итерация цикла = 22
+Родительский процесс: итерация цикла:  = 3
+Дочерний процесс: Итерация цикла = 23
+Родительский процесс: итерация цикла:  = 4
+Дочерний процесс: Итерация цикла = 24
+Родительский процесс: итерация цикла:  = 5
+Дочерний процесс: Итерация цикла = 25
+Дочерний процесс: Итерация цикла = 26
+Родительский процесс: итерация цикла:  = 6
+Родительский процесс: итерация цикла:  = 7
+Дочерний процесс: Итерация цикла = 27
+Родительский процесс: итерация цикла:  = 8
+Дочерний процесс: Итерация цикла = 28
+Дочерний процесс: Итерация цикла = 29
+Родительский процесс: итерация цикла:  = 9
+Дочерняя Программа завершена.
+Родительский процесс: Дочерний процесс завершился.
+Родительский процесс: Завершение работы.
+#с момента вызова fork  два процесса и родительский и дочерний выполняются паралельно
+
+polina@polina-UX303UA:~/OS$ cat father_before_fork.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    3117    3051  0  80   0 -  2245 do_wai pts/0    00:00:01 bash
+0 S  1000   14345    3117  0  80   0 -   670 do_wai pts/0    00:00:00 father
+0 S  1000   14346   14345  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   14347   14346 99  80   0 -  2824 -      pts/0    00:00:00 ps
+polina@polina-UX303UA:~/OS$ cat father_after_fork.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    3117    3051  0  80   0 -  2245 do_wai pts/0    00:00:01 bash
+0 S  1000   14345    3117  0  80   0 -   670 do_wai pts/0    00:00:00 father
+0 S  1000   14348   14345  0  80   0 -   670 do_wai pts/0    00:00:00 son.out
+0 S  1000   14349   14345  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+0 S  1000   14350   14348  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   14351   14349 99  80   0 -  2824 -      pts/0    00:00:00 ps
+0 R  1000   14352   14350 99  80   0 -  2824 -      pts/0    00:00:00 ps
+polina@polina-UX303UA:~/OS$ cat father_after_son_exit.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    3117    3051  0  80   0 -  2245 do_wai pts/0    00:00:01 bash
+0 S  1000   14345    3117  0  80   0 -   670 do_wai pts/0    00:00:00 father
+0 S  1000   14408   14345  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   14409   14408  0  80   0 -  2824 -      pts/0    00:00:00 ps
+polina@polina-UX303UA:~/OS$ cat father_process_after.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    3117    3051  0  80   0 -  2245 do_wai pts/0    00:00:01 bash
+0 S  1000   14345    3117  0  80   0 -   670 do_wai pts/0    00:00:00 father
+0 S  1000   14410   14345  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   14411   14410  0  80   0 -  2824 -      pts/0    00:00:00 ps
+polina@polina-UX303UA:~/OS$ cat output_son.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    3117    3051  0  80   0 -  2245 do_wai pts/0    00:00:01 bash
+0 S  1000   14345    3117  0  80   0 -   670 do_wai pts/0    00:00:00 father
+0 S  1000   14348   14345  0  80   0 -   670 do_wai pts/0    00:00:00 son.out
+0 S  1000   14404   14348  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+0 S  1000   14405   14345  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   14406   14404  0  80   0 -  2824 -      pts/0    00:00:00 ps
+4 R  1000   14407   14405  0  80   0 -  2824 -      pts/0    00:00:00 ps
+
+polina@polina-UX303UA:~/OS$ cat son_process.txt 
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000    3117    3051  0  80   0 -  2245 do_wai pts/0    00:00:01 bash
+0 S  1000   14345    3117  0  80   0 -   670 do_wai pts/0    00:00:00 father
+0 S  1000   14348   14345  0  80   0 -   670 do_wai pts/0    00:00:00 son.out
+0 S  1000   14350   14348  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   14352   14350 99  80   0 -  2824 -      pts/0    00:00:00 ps
+
+
+polina     15388    3051  0 20:41 pts/1    00:00:00 bash
+polina     15396    3117  0 20:41 pts/0    00:00:00 ./father
+polina     15399   15396  0 20:41 pts/0    00:00:00 son.out
+polina     15437   15388 99 20:41 pts/1    00:00:00 ps -ef
+
+
+#  в одном терминале
+polina@polina-UX303UA:~/OS$ ./father &
+[1] 16157
+# в другом
+polina@polina-UX303UA:~/OS$ ps -a
+    PID TTY          TIME CMD
+   2191 tty2     00:00:00 gnome-session-b
+  16115 pts/1    00:00:05 htop
+  16157 pts/0    00:00:00 father
+  16160 pts/0    00:00:00 son.out
+  16206 pts/2    00:00:00 ps
+polina@polina-UX303UA:~/OS$ ps -a
+    PID TTY          TIME CMD
+   2191 tty2     00:00:00 gnome-session-b
+  16115 pts/1    00:00:12 htop
+  16261 pts/2    00:00:00 ps
+
+2.3
+tsk.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <string.h>
+#include <errno.h>
+
+int main(int argc, char* argv[]) {
+
+   
+    pid_t ppid = getpid(); // Получаем PID родительского процесса
+    printf("Родительский процесс: PID = %d, PPID = %d\n", getpid(), getppid());
+   
+    //надо указывать путь
+    execl("./son.out", "son.out", NULL);
+   
+    execlp("son.out", "son.out", NULL);
+     
+
+    //можно задать окружение
+    char const *env[] = {"MY_VAR=Hello", "PATH=/usr/bin", NULL};
+    execle("/bin/ls", "ls", "-l", NULL, env);
+
+
+    //используется массив аргументов
+    char  *args[] = {"ls", "-l", NULL};
+    execv("/bin/ls", args);
+    return EXIT_SUCCESS;
+  }
+  
+  polina@polina-UX303UA:~/OS$ gcc tsk2.c -o tsk.out && ./tsk.out 
+Родительский процесс: PID = 20305, PPID = 18199
+Дочерний процесс: PID = 20305, PPID = 18199
+Дочерний процесс: Итерация цикла = 20
+Дочерний процесс: Итерация цикла = 21
+Дочерний процесс: Итерация цикла = 22
+Дочерний процесс: Итерация цикла = 23
+Дочерний процесс: Итерация цикла = 24
+Дочерний процесс: Итерация цикла = 25
+Дочерний процесс: Итерация цикла = 26
+Дочерний процесс: Итерация цикла = 27
+Дочерний процесс: Итерация цикла = 28
+Дочерний процесс: Итерация цикла = 29
+Дочерняя Программа завершена.
+
+2.4
+#tsk2-4.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+
+int main() {
+    printf("Родительский процесс: PID = %d, PPID = %d\n", getpid(), getppid());
+
+    
+    printf("\nСитуация 1: Нормальное завершение\n");
+    pid_t pid1 = fork();
+
+    if (pid1 < 0) {
+        fprintf(stderr, "Ошибка при создании дочернего процесса\n");
+        exit(1);
+
+    } else if (pid1 == 0) { // Дочерний процесс
+        printf("Дочерний процесс 1: PID = %d, PPID = %d\n", getpid(), getppid());
+        sleep(5); 
+        printf("Дочерний процесс 1: Завершение работы.\n");
+        exit(0);
+
+    } else { 
+        printf("Родительский процесс: Дочерний процесс 1 создан с PID = %d\n", pid1);
+        system("ps -l | tee  situation1.txt");
+        wait(NULL); // Ожидание завершения дочернего процесса
+        printf("Родительский процесс: Дочерний процесс 1 завершился.\n");
+    }
+
+
+    
+    printf("\nСитуация 3: Состояние зомби\n");
+    pid_t pid3 = fork();
+
+    if (pid3 < 0) {
+        fprintf(stderr, "Ошибка при создании дочернего процесса\n");
+        exit(1);
+
+    } else if (pid3 == 0) {
+        printf("Дочерний процесс 3: PID = %d, PPID = %d\n", getpid(), getppid());
+        sleep(5); 
+        printf("Дочерний процесс 3: Завершение работы.\n");
+        exit(0);
+
+    } else { 
+        printf("Родительский процесс: Дочерний процесс 3 создан с PID = %d\n", pid3);
+        system("ps -l | tee  situation3_before_zombie.txt");
+        sleep(10); 
+        system("ps -l | tee situation3_after_zombie.txt");
+        printf("Родительский процесс: Завершение работы.\n");
+    }
+
+
+    
+    printf("\nСитуация 2: Смена родителя\n");
+    pid_t pid2 = fork();
+
+    if (pid2 < 0) {
+        fprintf(stderr, "Ошибка при создании дочернего процесса\n");
+        exit(1);
+    } else if (pid2 == 0) { 
+        printf("Дочерний процесс 2: PID = %d, PPID = %d\n", getpid(), getppid());
+        sleep(10); 
+        printf("Дочерний процесс 2: Новый PPID = %d\n", getppid()); // Новый родитель
+        printf("Дочерний процесс 2: Завершение работы.\n");
+        exit(0);
+    } else { 
+        printf("Родительский процесс PID = %d, PPID = %d: Дочерний процесс 2 создан с PID = %d\n",  getpid(), getppid(), pid2);
+        system("ps -l | tee  situation2_before_exit.txt");
+        sleep(2); 
+        printf("Родительский процесс: Завершение работы.\n");
+        exit(0); 
+    }
+
+    return 0;
+}
+
+polina@polina-UX303UA:~/OS$ gcc tsk2-4.c -o tsk2-4.out && ./tsk2-4.out 
+Родительский процесс: PID = 22563, PPID = 18199
+
+Ситуация 1: Нормальное завершение
+Родительский процесс: Дочерний процесс 1 создан с PID = 22564
+Дочерний процесс 1: PID = 22564, PPID = 22563
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   22563   18199  0  80   0 -   670 do_wai pts/0    00:00:00 tsk2-4.out
+1 S  1000   22564   22563  0  80   0 -   670 hrtime pts/0    00:00:00 tsk2-4.out
+0 S  1000   22565   22563  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   22566   22565 99  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   22567   22565  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+Дочерний процесс 1: Завершение работы.
+Родительский процесс: Дочерний процесс 1 завершился.
+
+Ситуация 3: Состояние зомби
+Родительский процесс: Дочерний процесс 3 создан с PID = 22568
+Дочерний процесс 3: PID = 22568, PPID = 22563
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   22563   18199  0  80   0 -   670 do_wai pts/0    00:00:00 tsk2-4.out
+1 S  1000   22568   22563  0  80   0 -   670 hrtime pts/0    00:00:00 tsk2-4.out
+0 S  1000   22569   22563  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   22570   22569  0  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   22571   22569  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+Дочерний процесс 3: Завершение работы.
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   22563   18199  0  80   0 -   670 do_wai pts/0    00:00:00 tsk2-4.out
+1 Z  1000   22568   22563  0  80   0 -     0 -      pts/0    00:00:00 tsk2-4.out
+0 S  1000   22572   22563  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   22573   22572  0  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   22574   22572  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+Родительский процесс: Завершение работы.
+
+Ситуация 2: Смена родителя
+Родительский процесс PID = 22563, PPID = 18199: Дочерний процесс 2 создан с PID = 22575
+Дочерний процесс 2: PID = 22575, PPID = 22563
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   22563   18199  0  80   0 -   670 do_wai pts/0    00:00:00 tsk2-4.out
+1 Z  1000   22568   22563  0  80   0 -     0 -      pts/0    00:00:00 tsk2-4.out
+1 S  1000   22575   22563  0  80   0 -   670 hrtime pts/0    00:00:00 tsk2-4.out
+0 S  1000   22576   22563  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   22577   22576  0  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   22578   22576  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+Родительский процесс: Завершение работы.
+polina@polina-UX303UA:~/OS$ Дочерний процесс 2: Новый PPID = 2069
+Дочерний процесс 2: Завершение работы.
+
+#во третьем случае наблюдается, что после завершения дочернего процесса, процесс все еще отображается, но уже какк зомби, он не занимает памяти
+1 Z  1000   22568   22563  0  80   0 -     0 -      pts/0    00:00:00 tsk2-4.out
+# во втором случае после завершения родительского процесса, у дочернего сменяется ppid на 2069, это Systemd — менеджер загрузки в Linux, который отвечает 
+# за запуск программ и сервисов после старта операционной системы. Он следит за процессом загрузки, решает, что запустить и как
+ps  --pid=2069
+    PID TTY          TIME CMD
+   2069 ?        00:00:01 systemd
+
+3
+3.1
+polina@polina-UX303UA:~/OS$ gcc father3.c -o father3.out && gcc son1.c -o son1.out && gcc son2.c -o son2.out && gcc son3.c -o son3.out && ./father3.out
+Родительский процесс: PID = 25979, PPID = 18199
+
+Ситуация 1:  реакция на сигнал по умолчанию
+Дочерний процесс 1: PID = 25980, PPID = 25979
+son1: PID = 25980
+
+Ситуация 2: реакция игнорирования
+Дочерний процесс 2: PID = 25981, PPID = 25979
+son2: PID = 25981
+
+Ситуация 3: перехватывание и обработка сигнала
+Дочерний процесс 3: PID = 25982, PPID = 25979
+son3: PID = 25982
+Родительский процесс: Таблица процессов до отправки сигнала
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   25979   18199  0  80   0 -   670 do_wai pts/0    00:00:00 father3.out
+0 S  1000   25980   25979  0  80   0 -   670 hrtime pts/0    00:00:00 son1.out
+0 S  1000   25981   25979  0  80   0 -   670 hrtime pts/0    00:00:00 son2.out
+0 S  1000   25982   25979  0  80   0 -   670 hrtime pts/0    00:00:00 son3.out
+0 S  1000   25983   25979  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   25984   25983  0  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   25985   25983  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+Дочерний процесс 3: Получен сигнал 15
+son2: Завершение работы 
+Родительский процесс: Таблица процессов после отправки сигнала
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   25979   18199  0  80   0 -   670 do_wai pts/0    00:00:00 father3.out
+0 Z  1000   25980   25979  0  80   0 -     0 -      pts/0    00:00:00 son1.out
+0 Z  1000   25981   25979  0  80   0 -     0 -      pts/0    00:00:00 son2.out
+0 Z  1000   25982   25979  0  80   0 -     0 -      pts/0    00:00:00 son3.out
+0 S  1000   25989   25979  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   25990   25989  0  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   25991   25989  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+Родительский процесс: Завершение работы.
+
+#первый процес принудильно завершается, второй игнорирует сигнал и завершается сам через 5 секунд, третий обрабатывает сигнал и завершается. После обработки сигналов все три процесса находятся в состоянии зомби, ожидая пока родительский не обработает их. 
+
+# father3.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <unistd.h>
+//task 3.1 old version
+
+int main() {
+    printf("Родительский процесс: PID = %d, PPID = %d\n", getpid(), getppid());
+
+    
+    printf("\nСитуация 1:  реакция на сигнал по умолчанию\n");
+    pid_t pid1 = fork();
+
+    if (pid1 == 0) {
+        printf("Дочерний процесс 1: PID = %d, PPID = %d\n", getpid(), getppid());
+        execl("./son1.out", "son1.out", NULL);
+        printf("Дочерний процесс 1: Завершение работы.\n");
+        exit(0);
+
+    } 
+    sleep(1);
+
+    printf("\nСитуация 2: реакция игнорирования\n");
+    pid_t pid2 = fork();
+    if (pid2 == 0) { // Дочерний процесс
+        printf("Дочерний процесс 2: PID = %d, PPID = %d\n", getpid(), getppid());
+        execl("./son2.out", "son2.out", NULL);
+        printf("Дочерний процесс 2: Завершение работы.\n");
+        exit(0);
+
+    }
+
+    sleep(1);
+
+    printf("\nСитуация 3: перехватывание и обработка сигнала\n");
+    pid_t pid3 = fork();
+
+    if (pid3 == 0) { // Дочерний процесс
+        printf("Дочерний процесс 3: PID = %d, PPID = %d\n", getpid(), getppid());
+        execl("./son3.out", "son3.out", NULL);
+        printf("Дочерний процесс 3: Завершение работы.\n");
+    }
+
+    sleep(3); // даем время процессам запуститься
+
+    printf("Родительский процесс: Таблица процессов до отправки сигнала\n");
+    system("ps -l | tee  situation3-1-1.txt");
+
+    kill(pid1, SIGTERM);
+    kill(pid2, SIGTERM);
+    kill(pid3, SIGTERM);
+    
+    sleep(15);
+
+    printf("Родительский процесс: Таблица процессов после отправки сигнала\n");
+    system("ps -l | tee situation3-1-1.txt");
+
+    wait(NULL);
+    wait(NULL);
+    wait(NULL);
+
+    printf("Родительский процесс: Завершение работы.\n");
+
+    return 0;
+}
+
+#son1.c
+
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+
+int main() {
+    printf("son1: PID = %d\n", getpid());
+
+    while (1) {
+        sleep(1);
+    }
+
+    printf("son1: Завершение работы \n");
+    return 0;
+}
+
+#son2.c
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+
+int main() {
+    printf("son2: PID = %d\n", getpid());
+
+    // Игнорирование сигнала SIGTERM
+    signal(SIGTERM, SIG_IGN);
+    sleep(5);
+    
+    printf("son2: Завершение работы \n");
+    return 0;
+}
+
+#son3.c
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+#include <stdlib.h>
+
+void signal_handler(int signum) {
+    printf("Дочерний процесс 3: Получен сигнал %d\n", signum);
+    exit(0); // Завершаем процесс после обработки сигнала
+}
+
+int main() {
+    printf("son3: PID = %d\n", getpid());
+
+    // Перехват и обработка сигнала SIGTERM
+    signal(SIGTERM, signal_handler);
+
+    while (1) {
+        sleep(1);
+    }
+
+    printf("son3: Завершение работы \n");
+    return 0;
+}
+
+
+
+3.2
+# wait возвращает pid завершенного процесса в случае успеха и записывает статус завершения в переменную status, иначе -1
+#Если родительский процесс игнорирует сигнал SIGCHLD (с помощью signal(SIGCHLD, SIG_IGN)), операционная система автоматически освобождает ресурсы 
+# завершившихся дочерних процессов, и они не становятся зомби
+# программа обрабатывает 2 из 3 процессов, поэтому 1й так и остается висеть зомби
+polina@polina-UX303UA:~/OS$ gcc father3-2.c -o father3-2.out && gcc son.c -o son.out  && ./father3-2.out
+Родительский процесс: PID = 27477, PPID = 18199
+
+Дочерний процесс 1: PID = 27478, PPID = 27477
+son1: PID = 27478
+
+Дочерний процесс 2: PID = 27480, PPID = 27477
+Дочерний процесс 3: PID = 27481
+son2: PID = 27480
+Дочерний процесс: PID = 27481, PPID = 27477
+Родительский процесс: Таблица процессов до отправки сигнала
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   27477   18199  0  80   0 -   670 do_wai pts/0    00:00:00 father3-2.out
+0 S  1000   27478   27477  0  80   0 -   670 hrtime pts/0    00:00:00 son1.out
+0 S  1000   27480   27477  0  80   0 -   670 hrtime pts/0    00:00:00 son2.out
+0 S  1000   27481   27477  0  80   0 -   670 hrtime pts/0    00:00:00 son.out
+0 S  1000   27482   27477  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   27483   27482  0  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   27484   27482  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+son2: Завершение работы 
+Родительский процесс: Таблица процессов после отправки сигнала
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   27477   18199  0  80   0 -   670 do_wai pts/0    00:00:00 father3-2.out
+0 Z  1000   27478   27477  0  80   0 -     0 -      pts/0    00:00:00 son1.out
+0 Z  1000   27480   27477  0  80   0 -     0 -      pts/0    00:00:00 son2.out
+0 S  1000   27481   27477  0  80   0 -   670 hrtime pts/0    00:00:00 son.out
+0 S  1000   27485   27477  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   27486   27485 99  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   27487   27485  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+Родительский процесс: Дочерний процесс 2 завершился с кодом 0
+Дочерняя Программа завершена.
+Родительский процесс: Дочерний процесс 3 завершился с кодом 0
+Родительский процесс: Таблица процессов после отправки сигнала
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   27477   18199  0  80   0 -   670 do_wai pts/0    00:00:00 father3-2.out
+0 Z  1000   27478   27477  0  80   0 -     0 -      pts/0    00:00:00 son1.out
+0 S  1000   27510   27477  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   27511   27510  0  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   27512   27510  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+Родительский процесс: Завершение работы.
+если написать 
+
+# signal(SIGCHLD,SIG_IGN) - новая строка кода
+polina@polina-UX303UA:~/OS$ gcc father3-2.c -o father3-2.out && gcc son.c -o son.out  && ./father3-2.out
+Родительский процесс: PID = 27608, PPID = 18199
+
+
+Дочерний процесс 1: PID = 27609, PPID = 27608
+son1: PID = 27609
+
+
+Дочерний процесс 2: PID = 27610, PPID = 27608
+Дочерний процесс 3: PID = 27611
+son2: PID = 27610
+Дочерний процесс: PID = 27611, PPID = 27608
+Родительский процесс: Таблица процессов до отправки сигнала
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   27608   18199  0  80   0 -   670 do_wai pts/0    00:00:00 father3-2.out
+0 S  1000   27609   27608  0  80   0 -   670 hrtime pts/0    00:00:00 son1.out
+0 S  1000   27610   27608  0  80   0 -   670 hrtime pts/0    00:00:00 son2.out
+0 S  1000   27611   27608  0  80   0 -   670 hrtime pts/0    00:00:00 son.out
+0 S  1000   27612   27608  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   27613   27612 99  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   27614   27612  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+son2: Завершение работы 
+Родительский процесс: Таблица процессов после отправки сигнала
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   27608   18199  0  80   0 -   670 do_wai pts/0    00:00:00 father3-2.out
+0 S  1000   27611   27608  0  80   0 -   670 hrtime pts/0    00:00:00 son.out
+0 S  1000   27616   27608  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   27617   27616 99  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   27618   27616  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+Дочерняя Программа завершена.
+Родительский процесс: Таблица процессов после отправки сигнала
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+0 S  1000   18199   18192  0  80   0 -  2240 do_wai pts/0    00:00:00 bash
+0 S  1000   27608   18199  0  80   0 -   670 do_wai pts/0    00:00:00 father3-2.out
+0 S  1000   27628   27608  0  80   0 -   700 do_wai pts/0    00:00:00 sh
+4 R  1000   27629   27628 99  80   0 -  2824 -      pts/0    00:00:00 ps
+0 S  1000   27630   27628  0  80   0 -  1554 pipe_r pts/0    00:00:00 tee
+Родительский процесс: Завершение работы.
+
+# дочерние программы заершились сразу, в состоянии зомби они не были, результат работы не вернули
+
+#father3-2.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <unistd.h>
+//task 3.2 
+
+int main() {
+    printf("Родительский процесс: PID = %d, PPID = %d\n", getpid(), getppid());
+    signal(SIGCHLD,SIG_IGN);
+    
+    pid_t pid1 = fork();
+
+    if (pid1 == 0) {
+        printf("Дочерний процесс 1: PID = %d, PPID = %d\n", getpid(), getppid());
+        execl("./son1.out", "son1.out", NULL);
+        printf("Дочерний процесс 1: Завершение работы.\n");
+        exit(0);
+
+    } 
+    sleep(1);
+    
+
+    pid_t pid2 = fork();
+    if (pid2 == 0) { // Дочерний процесс
+        printf("Дочерний процесс 2: PID = %d, PPID = %d\n", getpid(), getppid());
+        execl("./son2.out", "son2.out", NULL);
+        printf("Дочерний процесс 2: Завершение работы.\n");
+        exit(10);
+
+    }
+    
+
+    pid_t pid3 = fork();
+    if (pid3 == 0) {
+        printf("Дочерний процесс 3: PID = %d\n", getpid());
+        execl("./son.out", "son.out", NULL);
+        printf("Дочерний процесс 3: Завершение работы.\n");
+        exit(20); 
+    }
+
+
+    sleep(3); // даем время процессам запуститься
+
+    printf("Родительский процесс: Таблица процессов до отправки сигнала\n");
+    system("ps -l | tee  situation3-1-1.txt");
+
+    kill(pid1, SIGTERM);
+     
+    
+    sleep(15);
+
+    printf("Родительский процесс: Таблица процессов после отправки сигнала\n");
+    system("ps -l | tee situation3-1-1.txt");
+
+    int status;
+    pid_t terminated_pid;
+    
+    terminated_pid = waitpid(pid2, &status, 0);
+    if (terminated_pid == pid2) {
+        if (WIFEXITED(status)) {
+            printf("Родительский процесс: Дочерний процесс 2 завершился с кодом %d\n", WEXITSTATUS(status));
+        }
+    }
+
+ 
+    terminated_pid = waitpid(pid3, &status, 0);
+    if (terminated_pid == pid3) {
+        if (WIFEXITED(status)) {
+            printf("Родительский процесс: Дочерний процесс 3 завершился с кодом %d\n", WEXITSTATUS(status));
+        }
+    }
+
+   
+    printf("Родительский процесс: Таблица процессов после отправки сигнала\n");
+    system("ps -l | tee situation3-1-1.txt");
+    printf("Родительский процесс: Завершение работы.\n");
+    return 0;
+}
+
+4
+4.1-4.3
+
+#потоки получают тот же PID, тк происходят в рамках одного процесса, 
+#потоки получают те же права доступа тк UID   GID совпадают с главным потоком
+#потоки наследуют приоритет и политику планирования
+#все потоки (нити) имеют оджно адресное простраство, включающее код, глобальные переменные, кучу, открытые файловые дескрипторы, переменные окружения
+# это подтверждается тем, что все потоки записывают сообщения в один и тот же открытый файл, используют глобальные переменные
+#оба подпункта подтвержадются следующим экспериментом
+#в эксперименте 1-3 потока создаются с помощью pthread_create и 4й с помощью clone
+
+polina@polina-UX303UA:~/OS$ ./a.out 
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000   47266   40560   47266   47266   8920 Ss   bash
+ 1000   126  1000   64177   64176   64177   64177  11820 S    bash
+ 1000   126  1000   92611   64177   92611   92611   3704 S+   ./a.out
+ 1000   126  1000   92612   92611   92611   92612   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000   126  1000   92614   92612   92611   92614  11988 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+thread1 is started
+thread2 is started
+thread3 is started
+Thread4 is started
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000   47266   40560   47266   47266   8920 Ss   bash
+ 1000   126  1000   64177   64176   64177   64177  11820 S    bash
+ 1000   126  1000   92611   64177   92611   92611  93828 Sl+  ./a.out
+ 1000   126  1000   92611   64177   92611   92615  93828 Sl+  ./a.out
+ 1000   126  1000   92611   64177   92611   92616  93828 Sl+  ./a.out
+ 1000   126  1000   92611   64177   92611   92617  93828 Sl+  ./a.out
+ 1000   126  1000   92611   64177   92611   92618  93828 Sl+  ./a.out
+ 1000   126  1000   92619   92611   92611   92619   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000   126  1000   92620   92619   92611   92620  11988 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+
+
+
+
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000   47266   40560   47266   47266   8920 Ss   bash
+ 1000   126  1000   64177   64176   64177   64177  11820 S    bash
+ 1000   126  1000   92611   64177   92611   92611  93828 S+   ./a.out
+ 1000   126  1000   92622   92611   92611   92622   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000   126  1000   92623   92622   92611   92623  11988 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+
+polina@polina-UX303UA:~/OS$ cat output.txt 
+thread1 is started TID 92615 PID 92611
+thread3 is started TID 92617 PID 92611
+thread3: Message 0
+thread1: Message 0
+thread2 is started TID 92616 PID 92611
+thread2: Message 0
+Thread4 is started TID 92618 PID 92611
+Thread4: Message 0
+thread1: Message 1
+thread3: Message 1
+thread2: Message 1
+Thread4: Message 1
+thread1: Message 2
+thread3: Message 2
+thread2: Message 2
+Thread4: Message 2
+thread1: Message 3
+thread3: Message 3
+thread2: Message 3
+Thread4: Message 3
+thread1: Message 4
+thread3: Message 4
+thread2: Message 4
+Thread4: Message 4
+thread3
+  Политика планирования: SCHED_OTHER
+  Приоритет: 0
+thread2
+  Политика планирования: SCHED_OTHER
+  Приоритет: 0
+thread1
+  Политика планирования: SCHED_OTHER
+  Приоритет: 0
+
+#task4.c
+#define _GNU_SOURCE
+#include <err.h>
+#include <sched.h>
+#include <signal.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/utsname.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <sys/syscall.h>
+#include <string.h>
+#include <errno.h>
+
+pthread_t t1, t2, t3;
+FILE *file;
+
+void* mythread(void * arg){
+    char const* name = arg;
+    printf("%s is started\n", name);
+    fprintf(file, "%s is started TID %ld PID %d\n", name, syscall(SYS_gettid), getpid());
+    fflush(file);
+    
+    for (int i = 0; i < 5; i++) {
+        fprintf(file, "%s: Message %d\n", name, i);
+        fflush(file);  // Очищаем буфер, чтобы сообщения сразу записывались в файл, по умолчанию оно кешируется для оптимизации
+        sleep(1);  
+    }
+
+    int policy;
+    struct sched_param param;
+    // Получаем параметры планирования для текущей нити
+    pthread_getschedparam(pthread_self(), &policy, &param);
+
+    // Выводим политику и приоритет
+    fprintf(file, "%s\n", name);
+    fprintf(file, "  Политика планирования: %s\n",
+           (policy == SCHED_FIFO)  ? "SCHED_FIFO" :
+           (policy == SCHED_RR)    ? "SCHED_RR" :
+           (policy == SCHED_OTHER) ? "SCHED_OTHER" : "Неизвестно");
+    fprintf(file, "  Приоритет: %d\n", param.sched_priority);
+    fflush(file);
+        
+
+    return NULL;
+    
+}
+
+int mythread_int(void * arg){
+    
+    printf("Thread4 is started\n");
+
+    fprintf(file, "Thread4 is started TID %ld PID %d\n", syscall(SYS_gettid), getpid());
+    
+
+    for (int i = 0; i < 5; i++) {
+        fprintf(file, "Thread4: Message %d\n", i);
+        fflush(file);  // Очищаем буфер, чтобы сообщения сразу записывались в файл, по умолчанию оно кешируется для оптимизации
+        sleep(1);
+        
+    }
+
+    int policy;
+    struct sched_param param;
+    // Получаем параметры планирования для текущей нити
+    pthread_getschedparam(pthread_self(), &policy, &param);
+
+    // Выводим политику и приоритет
+    
+    fprintf(file, "  Политика планирования: %s\n",
+           (policy == SCHED_FIFO)  ? "SCHED_FIFO" :
+           (policy == SCHED_RR)    ? "SCHED_RR" :
+           (policy == SCHED_OTHER) ? "SCHED_OTHER" : "Неизвестно");
+    fprintf(file, "  Приоритет: %d\n", param.sched_priority);
+    
+        
+
+    return 0;
+    
+}
+
+#define STACK_SIZE (1024 * 1024) 
+
+const char *name = "thread4"; // Имя потока
+pid_t child_pid;
+pid_t parent_pid;
+
+int main(){
+    file = fopen("output.txt", "w");
+    if (file == NULL) {
+        perror("Failed to open file");
+        return 1;
+    }
+    /* Allocate memory to be used for the stack of the child. */
+    char            *stack;         /* Start of stack buffer */
+    char            *stackTop;      /* End of stack buffer */
+    stack = mmap(NULL, STACK_SIZE, PROT_READ | PROT_WRITE,
+        MAP_PRIVATE | MAP_ANONYMOUS | MAP_STACK, -1, 0);
+    stackTop = stack + STACK_SIZE;  /* Assume stack grows downward */
+    if (stack == NULL) {
+        perror("Failed to open file");
+        return 1;
+    }
+    
+
+    system("ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T");
+    pthread_create(&t1, NULL, &mythread, "thread1");
+    pthread_create(&t2, NULL, &mythread, "thread2");
+    pthread_create(&t3, NULL, &mythread, "thread3");
+    
+    pid_t t4 = clone(mythread_int, stackTop,
+        CLONE_VM |  CLONE_FS | CLONE_SIGHAND |
+            CLONE_THREAD  | CLONE_PARENT_SETTID |
+            CLONE_CHILD_CLEARTID | CLONE_SYSVSEM,
+        &parent_pid, NULL, &child_pid);
+    
+    system("ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T");
+    //end of work
+    pthread_join(t1, NULL); // переводит в состояние ожидания текущий поток пока не завершится другой
+    pthread_join(t2, NULL);
+    pthread_join(t3, NULL);
+     
+    system("ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T");
+    
+    sleep(20);
+    fclose(file);
+    return 0;
+}
+
+4.4
+# kill(tn, SIGTERM) не приносит никакого эффекта
+# kill(t1, SIGKILL); так же не приносит результатов.
+# отсутсвие результата связано с тем, что kill пердназначен для процесса, а не для потока, в качестве аргумента необходимо передавать pid а не tid
+# однако если передать pid  то завершиться весь процесс  со всеми потоками
+thread1 is started
+thread3 is started
+thread2 is started
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000   47266   40560   47266   47266   8920 Ss   bash
+ 1000   126  1000   64177   64176   64177   64177  11820 S    bash
+ 1000   126  1000   94064   64177   94064   94064 159364 Sl+  ./a.out
+ 1000   126  1000   94064   64177   94064   94065 159364 Sl+  ./a.out
+ 1000   126  1000   94064   64177   94064   94066 159364 Sl+  ./a.out
+ 1000   126  1000   94064   64177   94064   94067 159364 Sl+  ./a.out
+ 1000   126  1000   94068   94064   94064   94068   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000   126  1000   94069   94068   94064   94069  11980 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+killing 
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000   47266   40560   47266   47266   8920 Ss   bash
+ 1000   126  1000   64177   64176   64177   64177  11820 S    bash
+ 1000   126  1000   94064   64177   94064   94064 159364 Sl+  ./a.out
+ 1000   126  1000   94064   64177   94064   94065 159364 Sl+  ./a.out
+ 1000   126  1000   94064   64177   94064   94066 159364 Sl+  ./a.out
+ 1000   126  1000   94064   64177   94064   94067 159364 Sl+  ./a.out
+ 1000   126  1000   94070   94064   94064   94070   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000   126  1000   94071   94070   94064   94071  11980 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+
+kill(getpid(), SIGKILL);
+
+polina@polina-UX303UA:~/OS$ ./a.out 
+thread1 is started
+thread3 is started
+thread2 is started
+  UID   GID  RUID     PID    PPID    PGID     TID    VSZ STAT COMMAND
+ 1000  1000  1000   47266   40560   47266   47266   8920 Ss   bash
+ 1000   126  1000   64177   64176   64177   64177  11820 S    bash
+ 1000   126  1000   94257   64177   94257   94257 159364 Sl+  ./a.out
+ 1000   126  1000   94257   64177   94257   94258 159364 Sl+  ./a.out
+ 1000   126  1000   94257   64177   94257   94259 159364 Sl+  ./a.out
+ 1000   126  1000   94257   64177   94257   94260 159364 Sl+  ./a.out
+ 1000   126  1000   94261   94257   94257   94261   2800 S+   sh -c -- ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+ 1000   126  1000   94262   94261   94257   94262  11968 R+   ps -o uid,gid,ruid,pid,ppid,pgid,tid,vsz,stat,command -T
+killing 
+Убито
+
+
+№5 
+5.1 
+Родительский процесс: PID = 95656, PPID = 64177
+    PID COMMAND         POL PRI  NI
+  47266 bash            TS   19   0
+  64177 bash            TS   19   0
+  95656 a.out           TS   19   0
+  95657 a.out           TS   19   0
+  95658 a.out           TS   19   0
+  95659 a.out           TS   19   0
+  95660 sh              TS   19   0
+  95661 ps              TS   19   0
+312312312
+# небольшая часть вывода, которая подтверждает, что приоритеты у процессов одинаковые и их выполнение чередуется
+# соответсвующий эксперимент на потоках был произведен в предыдущем задании
+
+5.2
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ ./a.out 
+Родительский процесс: PID = 96993, PPID = 64177
+Nice value of the current process: 0
+111111111111111111111111111111111111111111111212121212121212121212121212121221212121212121212121212121212121212121212121221212121212121212121212121212212121212222222232232323232323232323232323232323232323232323232323232323232323232323333333333333333333333333333333333333333333333333333333333333333333   
+    PID COMMAND         POL PRI  NI
+  47266 bash            TS   19   0
+  64177 bash            TS   19   0
+  96993 a.out           TS   19   0
+  96994 a.out           TS   14   5
+  96995 a.out           TS    4  15
+  96996 a.out           TS   19   0
+  96997 sh              TS   19   0
+  96998 ps              TS   19   0
+
+#у каждого процесса был изменен nice что видно по таблице процессов, чем больше установленное значение тем ниже приоритет выполнения
+# чтобы установить nice отрицательным необходимо запускать программу от имени root
+
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ ps -e -o pid,comm,policy,pri,ni 
+    PID COMMAND         POL PRI  NI
+      1 systemd         TS   19   0
+      2 kthreadd        TS   19   0
+      3 pool_workqueue_ TS   19   0
+      4 kworker/R-rcu_g TS   39 -20
+      5 kworker/R-sync_ TS   39 -20
+      6 kworker/R-slub_ TS   39 -20
+      7 kworker/R-netns TS   39 -20
+      9 kworker/0:0H-ev TS   39 -20
+     12 kworker/R-mm_pe TS   39 -20
+     13 rcu_tasks_kthre TS   19   0
+     14 rcu_tasks_rude_ TS   19   0
+     15 rcu_tasks_trace TS   19   0
+     16 ksoftirqd/0     TS   19   0
+     17 rcu_preempt     TS   19   0
+     18 rcu_exp_par_gp_ TS   19   0
+     19 rcu_exp_gp_kthr TS   19   0
+     20 migration/0     FF  139   -
+     21 idle_inject/0   FF   90   -
+     22 cpuhp/0         TS   19   0
+     23 cpuhp/1         TS   19   0
+     24 idle_inject/1   FF   90   -
+     25 migration/1     FF  139   -
+     26 ksoftirqd/1     TS   19   0
+     28 kworker/1:0H-ev TS   39 -20
+     29 cpuhp/2         TS   19   0
+     30 idle_inject/2   FF   90   -
+     31 migration/2     FF  139   -
+     32 ksoftirqd/2     TS   19   0
+     34 kworker/2:0H-ev TS   39 -20
+     35 cpuhp/3         TS   19   0
+     36 idle_inject/3   FF   90   -
+     37 migration/3     FF  139   -
+     38 ksoftirqd/3     TS   19   0
+     40 kworker/3:0H-ev TS   39 -20
+     41 kdevtmpfs       TS   19   0
+     42 kworker/R-inet_ TS   39 -20
+     44 kauditd         TS   19   0
+     45 khungtaskd      TS   19   0
+     46 oom_reaper      TS   19   0
+     48 kworker/R-write TS   39 -20
+     49 kcompactd0      TS   19   0
+     50 ksmd            TS   14   5
+     51 khugepaged      TS    0  19
+     52 kworker/R-kinte TS   39 -20
+     53 kworker/R-kbloc TS   39 -20
+     54 kworker/R-blkcg TS   39 -20
+     55 irq/9-acpi      FF   90   -
+     59 kworker/R-tpm_d TS   39 -20
+     60 kworker/R-ata_s TS   39 -20
+     61 kworker/R-md    TS   39 -20
+     62 kworker/R-md_bi TS   39 -20
+     63 kworker/R-edac- TS   39 -20
+     64 kworker/R-devfr TS   39 -20
+     65 watchdogd       FF   90   -
+     66 kworker/0:1H-kb TS   39 -20
+     67 kswapd0         TS   19   0
+     68 ecryptfs-kthrea TS   19   0
+     69 kworker/R-kthro TS   39 -20
+     70 kworker/R-acpi_ TS   39 -20
+     72 hwrng           TS   19   0
+     73 kworker/R-mld   TS   39 -20
+     74 kworker/2:1H-ev TS   39 -20
+     75 kworker/R-ipv6_ TS   39 -20
+     82 kworker/R-kstrp TS   39 -20
+     98 kworker/R-charg TS   39 -20
+    124 kworker/1:1H-ev TS   39 -20
+    125 kworker/3:1H-ev TS   39 -20
+    186 scsi_eh_0       TS   19   0
+    187 kworker/R-scsi_ TS   39 -20
+    188 scsi_eh_1       TS   19   0
+    189 kworker/R-scsi_ TS   39 -20
+    247 jbd2/sda2-8     TS   19   0
+    248 kworker/R-ext4- TS   39 -20
+    298 systemd-journal TS   20  -1
+    382 systemd-udevd   TS   19   0
+    384 psimon          FF   41   -
+    453 kworker/R-asus_ TS   39 -20
+    552 kworker/R-cfg80 TS   39 -20
+    584 kworker/R-crypt TS   39 -20
+    587 kworker/R-led_w TS   39 -20
+    592 irq/131-iwlwifi FF   90   -
+    636 kworker/R-ttm   TS   39 -20
+    640 card1-crtc0     FF   90   -
+    645 card1-crtc1     FF   90   -
+    651 card1-crtc2     FF   90   -
+    720 systemd-oomd    TS   19   0
+    726 systemd-resolve TS   19   0
+    732 systemd-timesyn TS   19   0
+   1065 avahi-daemon    TS   19   0
+   1067 bluetoothd      TS   19   0
+   1068 dbus-daemon     TS   19   0
+   1071 gnome-remote-de TS   19   0
+   1074 iio-sensor-prox TS   19   0
+   1080 polkitd         TS   19   0
+   1085 power-profiles- TS   19   0
+   1092 snapd           TS   19   0
+   1093 accounts-daemon TS   19   0
+   1094 cron            TS   19   0
+   1095 switcheroo-cont TS   19   0
+   1097 systemd-logind  TS   19   0
+   1098 thermald        TS   19   0
+   1099 udisksd         TS   19   0
+   1102 avahi-daemon    TS   19   0
+   1139 rsyslogd        TS   19   0
+   1142 NetworkManager  TS   19   0
+   1144 wpa_supplicant  TS   19   0
+   1217 ModemManager    TS   19   0
+   1353 unattended-upgr TS   19   0
+   1391 gdm3            TS   19   0
+   1395 colord          TS   19   0
+   1481 rtkit-daemon    TS   18   1
+   1549 krfcommd        TS   29 -10
+   1571 kerneloops      TS   19   0
+   1574 kerneloops      TS   19   0
+   1733 upowerd         TS   19   0
+   2059 gdm-session-wor TS   19   0
+   2069 systemd         TS   19   0
+   2074 (sd-pam)        TS   19   0
+   2084 pipewire        TS   30 -11
+   2085 pipewire        TS   19   0
+   2090 wireplumber     TS   30 -11
+   2092 pipewire-pulse  TS   30 -11
+   2100 gnome-keyring-d TS   19   0
+   2105 dbus-daemon     TS   19   0
+   2145 xdg-document-po TS   19   0
+   2149 xdg-permission- TS   19   0
+   2156 fusermount3     TS   19   0
+   2179 gdm-wayland-ses TS   19   0
+   2191 gnome-session-b TS   19   0
+   2261 gcr-ssh-agent   TS   19   0
+   2262 gnome-session-c TS   19   0
+   2278 gvfsd           TS   19   0
+   2293 gvfsd-fuse      TS   19   0
+   2295 gnome-session-b TS   19   0
+   2329 gnome-shell     TS   19   0
+   2334 at-spi-bus-laun TS   19   0
+   2349 dbus-daemon     TS   19   0
+   2458 at-spi2-registr TS   19   0
+   2475 gnome-shell-cal TS   19   0
+   2485 evolution-sourc TS   19   0
+   2488 gjs             TS   19   0
+   2506 ibus-daemon     TS   19   0
+   2511 gsd-a11y-settin TS   19   0
+   2513 gsd-color       TS   19   0
+   2519 gsd-datetime    TS   19   0
+   2522 gsd-housekeepin TS   19   0
+   2526 gsd-keyboard    TS   19   0
+   2530 gsd-media-keys  TS   19   0
+   2531 gsd-power       TS   19   0
+   2537 gsd-print-notif TS   19   0
+   2539 gsd-rfkill      TS   19   0
+   2543 gsd-screensaver TS   19   0
+   2544 gsd-disk-utilit TS   19   0
+   2545 gsd-sharing     TS   19   0
+   2547 gsd-smartcard   TS   19   0
+   2548 blueman-applet  TS   19   0
+   2550 gsd-sound       TS   19   0
+   2553 gsd-wacom       TS   19   0
+   2579 evolution-alarm TS   19   0
+   2636 gvfs-udisks2-vo TS   19   0
+   2707 ibus-memconf    TS   19   0
+   2708 ibus-extension- TS   19   0
+   2713 ibus-portal     TS   19   0
+   2721 gvfs-mtp-volume TS   19   0
+   2738 gsd-printer     TS   19   0
+   2741 goa-daemon      TS   19   0
+   2746 gvfs-goa-volume TS   19   0
+   2763 goa-identity-se TS   19   0
+   2769 gvfs-gphoto2-vo TS   19   0
+   2777 evolution-calen TS   19   0
+   2778 gvfs-afc-volume TS   19   0
+   2794 ibus-engine-sim TS   19   0
+   2808 evolution-addre TS   19   0
+   2813 snapd-desktop-i TS   19   0
+   2904 snapd-desktop-i TS   19   0
+   2940 tracker-miner-f IDL   0   -
+   2954 gjs             TS   19   0
+   2968 obexd           TS   19   0
+   2972 blueman-tray    TS   19   0
+   3057 xdg-desktop-por TS   19   0
+   3062 xdg-desktop-por TS   19   0
+   3076 xdg-desktop-por TS   19   0
+   3138 gvfsd-metadata  TS   19   0
+   3145 update-notifier TS   19   0
+   3193 yandex_browser  TS   19   0
+   3201 cat             TS   19   0
+   3202 cat             TS   19   0
+   3204 chrome_crashpad TS   19   0
+   3206 chrome_crashpad TS   19   0
+   3212 yandex_browser  TS   19   0
+   3213 yandex_browser- TS   19   0
+   3214 yandex_browser  TS   19   0
+   3216 yandex_browser  TS   19   0
+   3228 Xwayland        TS   19   0
+   3238 gsd-xsettings   TS   19   0
+   3266 ibus-x11        TS   19   0
+   3268 mutter-x11-fram TS   19   0
+   3296 yandex_browser  TS   19   0
+   3303 yandex_browser  TS   19   0
+   3326 yandex_browser  TS   19   0
+   3405 yandex_browser  TS   19   0
+   3413 yandex_browser  TS   19   0
+   3434 yandex_browser  TS   19   0
+   3447 yandex_browser  TS   19   0
+   3460 yandex_browser  TS   19   0
+   3496 yandex_browser  TS   19   0
+   3759 dconf-service   TS   19   0
+   4404 fwupd           TS   19   0
+   4432 yandex_browser  TS   19   0
+   5027 gvfsd-trash     TS   19   0
+   5061 gvfsd-recent    TS   19   0
+  40548 gnome-terminal  TS   19   0
+  40554 gnome-terminal. TS   19   0
+  40560 gnome-terminal- TS   19   0
+  40568 bash            TS   19   0
+  42102 containerd      TS   19   0
+  42329 dockerd         TS   19   0
+  42746 psimon          FF   41   -
+  47266 bash            TS   19   0
+  47629 code            TS   19   0
+  47638 code            TS   19   0
+  47639 code            TS   19   0
+  47641 code            TS   19   0
+  47660 chrome_crashpad TS   19   0
+  47676 code            TS   19   0
+  47681 code            TS   19   0
+  47695 code            TS   19   0
+  47745 code            TS   19   0
+  47839 gvfsd-network   TS   19   0
+  47868 gvfsd-dnssd     TS   19   0
+  64176 newgrp          TS   19   0
+  64177 bash            TS   19   0
+  70642 nautilus        TS   19   0
+  72414 ssh-agent       TS   19   0
+  74316 code            TS   19   0
+  76877 yandex_browser  TS   19   0
+  76912 yandex_browser  TS   19   0
+  76925 yandex_browser  TS   19   0
+  76976 yandex_browser  TS   19   0
+  77068 yandex_browser  TS   19   0
+  77192 yandex_browser  TS   19   0
+  77207 yandex_browser  TS   19   0
+  77771 yandex_browser  TS   19   0
+  77785 yandex_browser  TS   19   0
+  78682 code            TS   19   0
+  78683 code            TS   19   0
+  78732 cpptools        TS   19   0
+  79066 yandex_browser  TS   19   0
+  79106 yandex_browser  TS   19   0
+  79288 yandex_browser  TS   19   0
+  81318 irq/130-mei_me  FF   90   -
+  82673 code            TS   19   0
+  83688 bash            TS   19   0
+  85974 telegram-deskto TS   19   0
+  86804 yandex_browser  TS   19   0
+  86846 yandex_browser  TS   19   0
+  86911 yandex_browser  TS   19   0
+  86925 yandex_browser  TS   19   0
+  92136 kworker/1:0-eve TS   19   0
+  93715 kworker/u16:0-f TS   19   0
+  94631 kworker/u17:1-h TS   39 -20
+  95258 cpptools-srv    TS   19   0
+  95546 kworker/0:1-eve TS   19   0
+  95729 kworker/u16:2-i TS   19   0
+  95769 kworker/2:2-cgr TS   19   0
+  95791 yandex_browser  TS   19   0
+  96170 kworker/2:0-eve TS   19   0
+  96375 yandex_browser  TS   19   0
+  96436 cpptools-srv    TS   19   0
+  96480 cpptools-srv    TS   19   0
+  96505 kworker/u17:2+i TS   39 -20
+  96630 kworker/3:0-cgr TS   19   0
+  96751 kworker/1:1-eve TS   19   0
+  96829 kworker/0:0-cgr TS   19   0
+  96831 kworker/u16:3-f TS   19   0
+  96875 kworker/3:1-eve TS   19   0
+  97065 kworker/u16:1-e TS   19   0
+  97137 kworker/1:2     TS   19   0
+  97147 kworker/0:2-cgr TS   19   0
+  97165 yandex_browser  TS   19   0
+  97177 kworker/u17:0   TS   39 -20
+  97206 kworker/2:1-i91 TS   19   0
+  97233 kworker/3:2     TS   19   0
+  97312 cupsd           TS   19   0
+  97313 kworker/0:3     TS   19   0
+  97315 cups-browsed    TS   19   0
+  97414 tracker-extract IDL   0   -
+  97420 ps              TS   19   0
+
+# приореитет пользовательских и системных процессов отличается. 
+#
+
+
+5.3.1
+#так как приоритет одинаковый то количество выведенных символов зависит от времени жизни процесса
+#
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ sudo ./a.out 
+Политика планирования текущего процесса (PID = 102602): SCHED_FIFO
+Политика планирования текущего процесса (PID = 102603): SCHED_FIFO
+Политика планирования текущего процесса (PID = 102604): SCHED_FIFO
+count of 1: 137469952
+count of 2^ 140533760
+count of 3^ 143245312
+
+
+5.3.2 
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ ./a.out 
+Минимальный приоритет для SCHED_FIFO: 1
+Максимальный приоритет для SCHED_FIFO: 99
+
+5.3.3
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ sudo ./a.out 
+count of 1: 169484288
+count of 2^ 175157248
+count of 3^ 169070592
+
+# при изменении приоритетов выоленния есть различия. большее кол-во символов успел напечатат процесс с большим приоритетом
+# для подтверждения установленных приоритетов была получена информация через другой терминал
+
+polina@polina-UX303UA:~/devops/lab1$ sudo cat /proc/99888/sched
+a.out (99888, #threads: 1)
+-------------------------------------------------------------------
+se.exec_start                                :     156162576.774720
+se.vruntime                                  :             0.000000
+se.sum_exec_runtime                          :             2.592182
+se.nr_migrations                             :                    0
+nr_switches                                  :                   14
+nr_voluntary_switches                        :                   14
+nr_involuntary_switches                      :                    0
+se.load.weight                               :              1048576
+se.avg.load_sum                              :                    0
+se.avg.runnable_sum                          :                    0
+se.avg.util_sum                              :                    0
+se.avg.load_avg                              :                 1024
+se.avg.runnable_avg                          :                    0
+se.avg.util_avg                              :                    0
+se.avg.last_update_time                      :      156078958102488
+se.avg.util_est                              :                    0
+uclamp.min                                   :                 1024
+uclamp.max                                   :                 1024
+effective uclamp.min                         :                 1024
+effective uclamp.max                         :                 1024
+policy                                       :                    1
+prio                                         :                   29
+clock-delta                                  :                  156
+mm->numa_scan_seq                            :                    0
+numa_pages_migrated                          :                    0
+numa_preferred_nid                           :                   -1
+total_numa_faults                            :                    0
+current_node=0, numa_group_id=0
+numa_faults node=0 task_private=0 task_shared=0 group_private=0 group_shared=0
+
+
+polina@polina-UX303UA:~/devops/lab1$ sudo cat /proc/99889/sched
+a.out (99889, #threads: 1)
+-------------------------------------------------------------------
+se.exec_start                                :     156179579.151223
+se.vruntime                                  :             0.000000
+se.sum_exec_runtime                          :             4.305077
+se.nr_migrations                             :                    4
+nr_switches                                  :                   31
+nr_voluntary_switches                        :                   31
+nr_involuntary_switches                      :                    0
+se.load.weight                               :              1048576
+se.avg.load_sum                              :                    0
+se.avg.runnable_sum                          :                    0
+se.avg.util_sum                              :                    0
+se.avg.load_avg                              :                    0
+se.avg.runnable_avg                          :                    0
+se.avg.util_avg                              :                    0
+se.avg.last_update_time                      :      156132321644544
+se.avg.util_est                              :                    0
+uclamp.min                                   :                 1024
+uclamp.max                                   :                 1024
+effective uclamp.min                         :                 1024
+effective uclamp.max                         :                 1024
+policy                                       :                    1
+prio                                         :                   98
+clock-delta                                  :                  212
+mm->numa_scan_seq                            :                    0
+numa_pages_migrated                          :                    0
+numa_preferred_nid                           :                   -1
+total_numa_faults                            :                    0
+current_node=0, numa_group_id=0
+numa_faults node=0 task_private=0 task_shared=0 group_private=0 group_shared=0
+
+
+polina@polina-UX303UA:~/devops/lab1$ sudo cat /proc/99890/sched
+a.out (99890, #threads: 1)
+-------------------------------------------------------------------
+se.exec_start                                :     156183579.803137
+se.vruntime                                  :             0.000000
+se.sum_exec_runtime                          :             4.704674
+se.nr_migrations                             :                    0
+nr_switches                                  :                   35
+nr_voluntary_switches                        :                   35
+nr_involuntary_switches                      :                    0
+se.load.weight                               :              1048576
+se.avg.load_sum                              :                    0
+se.avg.runnable_sum                          :                    0
+se.avg.util_sum                              :                    0
+se.avg.load_avg                              :                 1024
+se.avg.runnable_avg                          :                    0
+se.avg.util_avg                              :                    0
+se.avg.last_update_time                      :      156069093731580
+se.avg.util_est                              :                    0
+uclamp.min                                   :                 1024
+uclamp.max                                   :                 1024
+effective uclamp.min                         :                 1024
+effective uclamp.max                         :                 1024
+policy                                       :                    1
+prio                                         :                    0
+clock-delta                                  :                  165
+mm->numa_scan_seq                            :                    0
+numa_pages_migrated                          :                    0
+numa_preferred_nid                           :                   -1
+total_numa_faults                            :                    0
+current_node=0, numa_group_id=0
+numa_faults node=0 task_private=0 task_shared=0 group_private=0 group_shared=0
+
+
+polina@polina-UX303UA:~/devops/lab1$ sudo cat /proc/99887/sched
+a.out (99887, #threads: 1)
+-------------------------------------------------------------------
+se.exec_start                                :     156196581.882905
+se.vruntime                                  :      11833304.865670
+se.sum_exec_runtime                          :            13.027754
+se.nr_migrations                             :                    0
+nr_switches                                  :                   48
+nr_voluntary_switches                        :                   48
+nr_involuntary_switches                      :                    0
+se.load.weight                               :              1048576
+se.avg.load_sum                              :                46777
+se.avg.runnable_sum                          :             23020466
+se.avg.util_sum                              :             23020466
+se.avg.load_avg                              :                 1024
+se.avg.runnable_avg                          :                  492
+se.avg.util_avg                              :                  492
+se.avg.last_update_time                      :      156076048706560
+se.avg.util_est                              :                    0
+uclamp.min                                   :                 1024
+uclamp.max                                   :                 1024
+effective uclamp.min                         :                 1024
+effective uclamp.max                         :                 1024
+policy                                       :                    1
+prio                                         :                   49
+clock-delta                                  :                  155
+mm->numa_scan_seq                            :                    0
+numa_pages_migrated                          :                    0
+numa_preferred_nid                           :                   -1
+total_numa_faults                            :                    0
+current_node=0, numa_group_id=0
+numa_faults node=0 task_private=0 task_shared=0 group_private=0 group_shared=0
+
+5.4
+# при одинаковом приоритете
+Величина кванта (SCHED_RR): 2 мс
+Политика планирования текущего процесса (PID = 104815): SCHED_RR
+Политика планирования текущего процесса (PID = 104816): SCHED_RR
+Политика планирования текущего процесса (PID = 104817): SCHED_RR
+count of 1: 142434304
+count of 2^ 141590528
+count of 3^ 140578816
+
+#при различном приоритете (pid1 = 1 pid2 = 50 pid = 99) вывод изменяется
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ sudo ./a.out 
+Политика планирования текущего процесса (PID = 104900): SCHED_RR
+Политика планирования текущего процесса (PID = 104901): SCHED_RR
+Политика планирования текущего процесса (PID = 104902): SCHED_RR
+count of 1: 136589312
+count of 2^ 142729216
+count of 3^ 142684160
+
+# после добавления sched_yield(); в конец каждой итерации цикла
+count of 1: 2273280
+count of 2^ 1716224
+count of 3^ 1830912
+
+5.5
+# Процессы с политиками реального времени (SCHED_FIFO, SCHED_RR) всегда имеют приоритет над процессами с SCHED_OTHER
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ sudo ./a.out 
+Политика планирования текущего процесса (PID = 105546): SCHED_OTHER
+Политика планирования текущего процесса (PID = 105547): SCHED_RR
+Политика планирования текущего процесса (PID = 105548): SCHED_FIFO
+count of 1: 157347840
+count of 2^ 159313920
+count of 3^ 169775104
+
+
+5.6
+#было сделано в 4м задании быда определена политика потоков по умолчанию
+5.6.1
+// разные политики для разных потоков
+// несмотря на то что 2й поток запустился позже тиретьего, по выводу видно что 2ка печатается чуть чаще чем остальные
+// также стоит уточнить, что для третьего потока приоритет 0, тк для SCHED_OTHER нельзя установить приоритет, а для остальных доспустимый приоритет от 1 до 99
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ sudo ./a.out 
+1 is started TID 109053 PID 109052
+killing 
+ 1: Политика планирования: SCHED_FIFO
+  Приоритет: 50
+3 is started TID 109055 PID 109052
+ 3: Политика планирования: SCHED_OTHER
+  Приоритет: 0
+2 is started TID 109054 PID 109052
+ 2: Политика планирования: SCHED_RR
+  Приоритет: 50
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ cat output.txt 
+132132123123123123123123123123123123123123123123123123123123213213213213213213231231213213213213213213213213213213213213213213213213213213213213213213
+//было добавлено:
+if(*name == '1'){
+        policy = SCHED_FIFO;
+    }
+    else if(*name == '2'){
+        policy = SCHED_RR;
+    }
+    else if(*name == '3'){
+        policy = SCHED_OTHER;
+        param.sched_priority = 0;
+    }
+    
+//RR для всех потоков
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ sudo ./a.out 
+1 is started TID 109306 PID 109305
+ 1: Политика планирования: SCHED_RR
+  Приоритет: 50
+2 is started TID 109307 PID 109305
+killing 
+ 2: Политика планирования: SCHED_RR
+  Приоритет: 50
+3 is started TID 109308 PID 109305
+ 3: Политика планирования: SCHED_RR
+  Приоритет: 50
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ cat output.txt 
+123321321321321312312312312321321321321321312321321321312312312312312312312321321312312312312312312312312312312312312312312312312312312312312312312312
+
+//FIFO для всех потоков
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ sudo ./a.out 
+1 is started TID 109230 PID 109229
+killing 
+ 1: Политика планирования: SCHED_FIFO
+  Приоритет: 50
+2 is started TID 109231 PID 109229
+3 is started TID 109232 PID 109229
+ 2: Политика планирования: SCHED_FIFO
+  Приоритет: 50
+ 3: Политика планирования: SCHED_FIFO
+  Приоритет: 50
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ cat output.txt 
+132312312312312312312312312312312321321321321312312123213213231231213213213213213213213213231231231231213231231231231213213231231231321321321312132312
+
+5-6-2
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ sudo ./a.out 
+1 is started TID 109588 PID 109587
+killing 
+2 is started TID 109589 PID 109587
+ 2: Политика планирования: SCHED_FIFO
+  Приоритет: 99
+ 1: Политика планирования: SCHED_FIFO
+3 is started TID 109590 PID 109587
+  Приоритет: 1
+ 3: Политика планирования: SCHED_FIFO
+  Приоритет: 1
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ cat output.txt 
+231213213231231231231213213213231231231213213123213213213213132132132132123123132123123213213213213123213213213213213213213213213213213213213213213213po
+
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ sudo ./a.out 
+1 is started TID 109679 PID 109678
+2 is started TID 109680 PID 109678
+ 1: Политика планирования: SCHED_RR
+  Приоритет: 1
+ 2: Политика планирования: SCHED_RR
+  Приоритет: 99
+3 is started TID 109681 PID 109678
+ 3: Политика планирования: SCHED_RR
+  Приоритет: 1
+killing 
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ cat output.txt 
+123123123213213123213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213213po
+
+6
+6.1 
+// через fork без execl
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ sudo ./a.out 
+Родительский процесс: PID = 109975, PPID = 109974
+Дочерний процесс : PID = 109976, PPID = 109975
+Дочерний процесс : Завершение работы.
+Родительский процесс: Завершение работы.
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ cat output.txt 
+parent process 1
+child
+parent process 2
+
+// execl
+// необходимо иначе открыть файловый поток, используя флаги
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ gcc task6.1-parent.c && gcc task6.1-son.c -o son.out && ./a.out
+Родительский процесс: PID = 110317, PPID = 64177
+Дочерний процесс : PID = 110318, PPID = 110317
+Родительский процесс: Завершение работы.
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ cat output.txt 
+Parent writes before exec
+Child exec writes
+
+6.2
+// и execl  и без него процессы наследуют политику приоритетов
+
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ gcc task6-2.parent.c && gcc task6-2-son.c -o son.out && ./a.out
+Родительский процесс: PID = 110624, PPID = 64177
+Политика планирования текущего процесса (PID = 110624): SCHED_OTHER
+Дочерний процесс : PID = 110625, PPID = 110624
+Дочерний процесс : PID = 110626, PPID = 110624
+Политика планирования текущего процесса (PID = 110626): SCHED_OTHER
+Политика планирования текущего процесса (PID = 110625): SCHED_OTHER
+Родительский процесс: Завершение работы.
+
+6.3
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ gcc task6-3.c && gcc task6-3-son.c -o son.out && ./a.out
+Родительский процесс: PID = 111365, PPID = 40568
+Дочерний процесс : PID = 111366, PPID = 111365
+Process 111366 caught signal 10
+Дочерний процесс : PID = 111367, PPID = 111365
+Process 111367 caught signal 10
+Родительский процесс: Завершение работы.
+
+
+6.4
+Политика планирования текущего процесса (PID = 111581): SCHED_OTHER
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ gcc task6-4.c  && ./a.out
+Родительский процесс: PID = 111599, PPID = 40568
+Политика планирования текущего процесса (PID = 111599): SCHED_OTHER
+Дочерний процесс: PID = 111600, PPID = 111599
+Политика планирования текущего процесса (PID = 111600): SCHED_OTHER
+polina@polina-UX303UA:~/OS/Kurkina_Polina_lb2$ cat output.txt 
+Parent writes before clone
+Parent writes after clone
+Child clone 
+
